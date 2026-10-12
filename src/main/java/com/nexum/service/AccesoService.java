@@ -23,7 +23,7 @@ public class AccesoService {
             throw new AccessDeniedException("Acceso denegado");
         }
     }
-
+//yoshi estuvo aqui
     public void verificarEmail(String email) {
         if (esAdministrador()) {
             return;
