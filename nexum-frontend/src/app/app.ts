@@ -15,6 +15,6 @@ export class App {
 
   protected logout(): void {
     this.auth.logout();
-    void this.router.navigate(['/register']);
+    void this.router.navigate(['/login']);
   }
 }

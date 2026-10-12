@@ -17,7 +17,10 @@ describe('App', () => {
       imports: [App],
       providers: [
         provideHttpClient(),
-        provideRouter([{ path: 'register', component: RegisterRouteComponent }]),
+        provideRouter([
+          { path: 'login', component: RegisterRouteComponent },
+          { path: 'register', component: RegisterRouteComponent },
+        ]),
       ],
     }).compileComponents();
   });
@@ -37,7 +40,7 @@ describe('App', () => {
   });
 
   it.each(['USUARIO', 'ADMINISTRADOR'] as const)(
-    'clears the %s session and navigates to registration when logging out',
+    'clears the %s session and navigates to login when logging out',
     async (role) => {
       globalThis.sessionStorage.setItem('nexum.accessToken', 'test-token');
       globalThis.sessionStorage.setItem('nexum.userRole', role);
@@ -48,7 +51,7 @@ describe('App', () => {
       fixture.nativeElement.querySelector('.logout-button').click();
       await fixture.whenStable();
 
-      expect(TestBed.inject(Router).url).toBe('/register');
+      expect(TestBed.inject(Router).url).toBe('/login');
       expect(globalThis.sessionStorage.getItem('nexum.accessToken')).toBeNull();
     },
   );
