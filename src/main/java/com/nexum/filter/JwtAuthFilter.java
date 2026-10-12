@@ -27,6 +27,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UsuarioDetailsService usuarioDetailsService;
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
+    /**
+     * Las rutas públicas de autenticación no pasan por el filtro: un token viejo o
+     * vencido enviado por el cliente no debe impedir registrarse ni iniciar sesión.
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/api/auth/");
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

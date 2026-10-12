@@ -51,6 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/salud").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/usuarios").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET,
                                 "/api/categorias/**",
