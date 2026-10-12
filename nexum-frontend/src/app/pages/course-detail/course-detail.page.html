@@ -153,7 +153,7 @@
                 <span class="viewer-mark" aria-hidden="true">⌑</span>
                 <h3>Tu siguiente paso</h3>
                 <p>Inscríbete para acceder al contenido completo de las lecciones.</p>
-                @if (course()?.precio === null || course()?.precio === 0) {
+                @if (course.precio === null || course.precio === 0) {
                   <button class="button button-dark" type="button" (click)="enroll()" [disabled]="saving()">Inscribirme al curso</button>
                 } @else {
                   <p class="payment-note">La inscripción estará disponible cuando se integre el pago en línea.</p>

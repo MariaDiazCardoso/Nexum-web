@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -15,7 +15,7 @@ interface LearningCourse {
 
 @Component({
   selector: 'app-my-learning-page',
-  imports: [DecimalPipe, RouterLink],
+  imports: [DatePipe, DecimalPipe, RouterLink],
   templateUrl: './my-learning.page.html',
   styleUrl: './my-learning.page.scss',
 })

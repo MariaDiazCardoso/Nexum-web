@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -36,7 +36,7 @@ interface LessonDraft {
 
 @Component({
   selector: 'app-course-detail-page',
-  imports: [DatePipe, FormsModule, RouterLink],
+  imports: [DecimalPipe, FormsModule, RouterLink],
   templateUrl: './course-detail.page.html',
   styleUrl: './course-detail.page.scss',
 })
@@ -258,7 +258,7 @@ export class CourseDetailPage implements OnInit {
     const request = existing
       ? this.http.patch<LessonProgressResponse>(`${API_BASE_URL}/progresos-leccion/${existing.id}`, { completado: true })
       : this.http.post<LessonProgressResponse>(`${API_BASE_URL}/progresos-leccion`, {
-          usuarioId,
+          usuarioId: userId,
           leccionId: lesson.id,
           completado: true,
         });
