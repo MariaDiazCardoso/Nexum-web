@@ -38,4 +38,4 @@ npm test -- --watch=false
 
 Al importar el repositorio en Vercel, configura `nexum-frontend` como **Root Directory**. Usa `npm run build` como comando de compilación y `dist/nexum-frontend/browser` como directorio de salida.
 
-Antes de desplegar, cambia `API_BASE_URL` en `src/app/core/api.config.ts` para que apunte a la URL pública del backend y permite el dominio de Vercel en la configuración CORS de Spring. No pongas credenciales de PostgreSQL/Neon en Angular: el frontend solo debe consumir la API del backend.
+Antes de desplegar, configura la URL pública del backend en `src/environments/environment.production.ts` como `apiUrl` (incluye `/api`) y permite el dominio del frontend en la variable `CORS_ORIGINS` del backend. No pongas credenciales de PostgreSQL/Neon en Angular: el frontend solo debe consumir la API del backend.

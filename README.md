@@ -19,7 +19,7 @@ Las tareas del backend están en `docs/tareas_codigo_nexum_v2.md`.
 | `PORT` | No | Puerto (por defecto `8081`) |
 | `JWT_SECRET` | Sí | Base64 de al menos 32 bytes: `openssl rand -base64 32` |
 | `JWT_EXPIRATION_MINUTES` | No | Vigencia del token (por defecto `30`) |
-| `CORS_ORIGINS` | No | Orígenes permitidos separados por coma, sin `/` final (por defecto `http://localhost:4200`) |
+| `CORS_ORIGINS` | No | Orígenes permitidos separados por coma, sin `/` final (por defecto `http://localhost:4200,https://nexum-web-tau.vercel.app`) |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | No | Crean el administrador inicial si no existe |
 | `SHOW_SQL` | No | `true` para ver el SQL de Hibernate (solo local) |
 | `DB_POOL_SIZE` | No | Conexiones máximas a la BD (por defecto `5`) |
