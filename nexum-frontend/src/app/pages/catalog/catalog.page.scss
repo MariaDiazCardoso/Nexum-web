@@ -80,6 +80,10 @@
   margin-top: 27px;
 }
 
+.hero-cta {
+  font-family: inherit;
+}
+
 .hero-cta span,
 .bottom-cta .button span {
   font-size: 18px;
@@ -604,6 +608,22 @@
   justify-content: space-between;
   margin-top: 16px;
   padding-top: 12px;
+}
+
+.course-link {
+  align-items: center;
+  color: var(--green);
+  display: flex;
+  font-size: 10px;
+  font-weight: 750;
+  justify-content: space-between;
+  margin-top: 12px;
+  text-decoration: none;
+}
+
+.course-link:hover {
+  color: var(--green-dark);
+  text-decoration: underline;
 }
 
 .course-price {

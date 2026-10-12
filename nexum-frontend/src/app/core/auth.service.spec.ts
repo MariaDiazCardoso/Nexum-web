@@ -52,7 +52,9 @@ describe('AuthService', () => {
 
     expect(globalThis.sessionStorage.getItem('nexum.accessToken')).toBe('test-token');
     expect(globalThis.sessionStorage.getItem('nexum.userRole')).toBe('USUARIO');
+    expect(globalThis.sessionStorage.getItem('nexum.userId')).toBe('user-1');
     expect(authService.user()?.id).toBe('user-1');
+    expect(authService.userId()).toBe('user-1');
     expect(authService.role()).toBe('USUARIO');
     expect(authService.isAdmin()).toBe(false);
     expect(authService.isAuthenticated()).toBe(true);
@@ -61,23 +63,28 @@ describe('AuthService', () => {
   it('restores the administrator role from the current browser session', () => {
     globalThis.sessionStorage.setItem('nexum.accessToken', 'admin-token');
     globalThis.sessionStorage.setItem('nexum.userRole', 'ADMINISTRADOR');
+    globalThis.sessionStorage.setItem('nexum.userId', 'admin-1');
 
     const restoredAuthService = TestBed.inject(AuthService);
 
     expect(restoredAuthService.isAuthenticated()).toBe(true);
     expect(restoredAuthService.isAdmin()).toBe(true);
+    expect(restoredAuthService.userId()).toBe('admin-1');
   });
 
   it('clears the session when logging out', () => {
     globalThis.sessionStorage.setItem('nexum.accessToken', 'test-token');
     globalThis.sessionStorage.setItem('nexum.userRole', 'ADMINISTRADOR');
+    globalThis.sessionStorage.setItem('nexum.userId', 'admin-1');
     authService = TestBed.inject(AuthService);
     authService.logout();
 
     expect(globalThis.sessionStorage.getItem('nexum.accessToken')).toBeNull();
     expect(globalThis.sessionStorage.getItem('nexum.userRole')).toBeNull();
+    expect(globalThis.sessionStorage.getItem('nexum.userId')).toBeNull();
     expect(authService.user()).toBeNull();
     expect(authService.role()).toBeNull();
+    expect(authService.userId()).toBeNull();
     expect(authService.isAuthenticated()).toBe(false);
   });
 });

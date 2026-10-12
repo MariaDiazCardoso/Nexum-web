@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { API_BASE_URL } from '../../core/api.config';
 import { getApiErrorMessage } from '../../core/api-error';
+import { AuthService } from '../../core/auth.service';
 import { CategoryResponse, CourseResponse } from '../../core/api.models';
 
 interface CatalogCourse extends CourseResponse {
@@ -20,6 +21,7 @@ interface CatalogCourse extends CourseResponse {
 })
 export class CatalogPage implements OnInit {
   private readonly http = inject(HttpClient);
+  readonly auth = inject(AuthService);
 
   readonly courses = signal<CatalogCourse[]>([]);
   readonly categories = signal<CategoryResponse[]>([]);
@@ -85,5 +87,11 @@ export class CatalogPage implements OnInit {
 
   setSearch(value: string): void {
     this.searchTerm.set(value);
+  }
+
+  scrollToCourses(): void {
+    if (typeof document !== 'undefined') {
+      document.getElementById('course-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 }

@@ -4,7 +4,11 @@
       <span class="eyebrow"><span class="eyebrow-dot"></span> APRENDE A TU MANERA</span>
       <h1>Lo que quieres ser<br />empieza con <span>lo que aprendes.</span></h1>
       <p>Descubre cursos creados para llevar tu curiosidad a donde quieres llegar.</p>
-      <a class="button button-lime hero-cta" routerLink="/register">Encuentra tu próximo curso <span aria-hidden="true">→</span></a>
+      @if (auth.isAuthenticated()) {
+        <button class="button button-lime hero-cta" type="button" (click)="scrollToCourses()">Encuentra tu próximo curso <span aria-hidden="true">→</span></button>
+      } @else {
+        <a class="button button-lime hero-cta" routerLink="/register">Encuentra tu próximo curso <span aria-hidden="true">→</span></a>
+      }
       <div class="hero-proof">
         <span class="proof-avatars" aria-hidden="true"><i>V</i><i>M</i><i>A</i></span>
         <span>Aprende a tu ritmo, desde donde estés</span>
@@ -31,7 +35,7 @@
     </div>
   </div>
 
-  <div class="catalog-content">
+  <div class="catalog-content" id="course-list">
     <div class="section-heading">
       <div>
         <span class="section-kicker">ELIGE TU SIGUIENTE PASO</span>
@@ -152,6 +156,9 @@
                   <span class="rating"><span aria-hidden="true">★</span> {{ course.promedioValoracion | number:'1.1-1' }}</span>
                 }
               </div>
+              <a class="course-link" [routerLink]="['/courses', course.id]">
+                Ver detalles del curso <span aria-hidden="true">→</span>
+              </a>
             </div>
           </article>
         }
@@ -165,6 +172,10 @@
       <span class="section-kicker">ESTE ES TU MOMENTO</span>
       <h2>Un nuevo comienzo<br />puede ser hoy<span>.</span></h2>
     </div>
-    <a class="button button-dark" routerLink="/register">Empieza a aprender <span aria-hidden="true">→</span></a>
+    @if (auth.isAuthenticated()) {
+      <button class="button button-dark" type="button" (click)="scrollToCourses()">Ver cursos <span aria-hidden="true">→</span></button>
+    } @else {
+      <a class="button button-dark" routerLink="/register">Empieza a aprender <span aria-hidden="true">→</span></a>
+    }
   </section>
 </section>

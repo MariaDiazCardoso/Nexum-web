@@ -2,6 +2,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { forkJoin, Observable } from 'rxjs';
 import { API_BASE_URL } from '../../core/api.config';
 import { getApiErrorMessage } from '../../core/api-error';
@@ -28,7 +29,7 @@ type UserEditor = { nombre: string; apellido: string; email: string; avatarUrl: 
 
 @Component({
   selector: 'app-admin-page',
-  imports: [DatePipe, DecimalPipe, FormsModule],
+  imports: [DatePipe, DecimalPipe, FormsModule, RouterLink],
   templateUrl: './admin.page.html',
   styleUrl: './admin.page.scss',
 })

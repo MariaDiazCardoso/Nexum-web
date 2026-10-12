@@ -1,0 +1,291 @@
+:host {
+  display: block;
+}
+
+.learning-page {
+  min-height: calc(100vh - 76px);
+  padding: 48px clamp(20px, 7vw, 100px) 72px;
+}
+
+.learning-wrap {
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.learning-heading {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 31px;
+}
+
+.eyebrow {
+  align-items: center;
+  color: var(--green);
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 800;
+  gap: 8px;
+  letter-spacing: 1.3px;
+}
+
+.eyebrow-dot {
+  background: #a4c756;
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+.learning-heading h1 {
+  font-size: clamp(34px, 5vw, 48px);
+  letter-spacing: -2px;
+  margin: 13px 0 7px;
+}
+
+.learning-heading h1 span {
+  color: var(--green);
+}
+
+.learning-heading p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0;
+}
+
+.learning-heading .button,
+.continue-button {
+  gap: 9px;
+}
+
+.learning-summary {
+  align-items: center;
+  background: #eef4e9;
+  border-radius: 12px;
+  color: var(--muted);
+  display: flex;
+  font-size: 11px;
+  gap: 12px;
+  margin-bottom: 19px;
+  padding: 14px 17px;
+}
+
+.summary-mark {
+  color: var(--green);
+  font-size: 18px;
+}
+
+.learning-summary strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.summary-divider {
+  background: #d7e0d1;
+  height: 20px;
+  width: 1px;
+}
+
+.learning-grid {
+  display: grid;
+  gap: 19px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.learning-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.learning-art {
+  align-items: center;
+  display: flex;
+  height: 125px;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.learning-art::after {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  content: '';
+  height: 210px;
+  position: absolute;
+  right: -25px;
+  top: -60px;
+  width: 210px;
+}
+
+.learning-art > span {
+  font-size: 8px;
+  font-weight: 800;
+  left: 14px;
+  letter-spacing: 1px;
+  position: absolute;
+  top: 13px;
+}
+
+.learning-art > strong {
+  font-size: 58px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+.art-tone-0 {
+  background: #dcebd5;
+  color: #527748;
+}
+
+.art-tone-1 {
+  background: #eae3d7;
+  color: #967b4c;
+}
+
+.art-tone-2 {
+  background: #dfe7ee;
+  color: #557187;
+}
+
+.art-tone-3 {
+  background: #e8dfe9;
+  color: #806685;
+}
+
+.learning-card-body {
+  padding: 17px;
+}
+
+.card-meta {
+  color: var(--green);
+  display: flex;
+  font-size: 9px;
+  font-weight: 700;
+  justify-content: space-between;
+}
+
+.card-meta span:last-child {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.learning-card h2 {
+  font-size: 16px;
+  letter-spacing: -0.4px;
+  margin: 11px 0 6px;
+}
+
+.learning-card-body > p {
+  color: var(--muted);
+  display: -webkit-box;
+  font-size: 10px;
+  line-height: 1.6;
+  margin: 0;
+  min-height: 32px;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.progress-label {
+  color: var(--muted);
+  display: flex;
+  font-size: 10px;
+  justify-content: space-between;
+  margin: 17px 0 7px;
+}
+
+.progress-label strong {
+  color: var(--ink);
+}
+
+.progress-track {
+  background: #edf0e9;
+  border-radius: 20px;
+  height: 7px;
+  overflow: hidden;
+}
+
+.progress-track span {
+  background: #98b84e;
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  transition: width 180ms ease;
+}
+
+.continue-button {
+  margin-top: 17px;
+  min-height: 40px;
+  width: 100%;
+}
+
+.learning-state {
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 300px;
+  padding: 32px;
+  text-align: center;
+}
+
+.state-mark {
+  align-items: center;
+  background: #eef4e9;
+  border-radius: 50%;
+  color: var(--green);
+  display: inline-flex;
+  font-size: 21px;
+  height: 48px;
+  justify-content: center;
+  width: 48px;
+}
+
+.learning-state h2 {
+  font-size: 20px;
+  margin: 15px 0 6px;
+}
+
+.learning-state p {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 0 0 17px;
+  max-width: 450px;
+}
+
+.error-state .state-mark {
+  background: #faece9;
+  color: var(--danger);
+}
+
+@media (max-width: 900px) {
+  .learning-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .learning-page {
+    padding: 32px 17px 48px;
+  }
+
+  .learning-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 17px;
+  }
+
+  .learning-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .learning-summary {
+    flex-wrap: wrap;
+  }
+}

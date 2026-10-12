@@ -1,0 +1,64 @@
+<section class="learning-page">
+  <div class="learning-wrap">
+    <header class="learning-heading">
+      <div>
+        <span class="eyebrow"><span class="eyebrow-dot"></span> TU ESPACIO DE APRENDIZAJE</span>
+        <h1>Mis cursos<span>.</span></h1>
+        <p>Retoma tu camino y convierte cada lección en un nuevo avance.</p>
+      </div>
+      <a class="button button-dark" routerLink="/catalog">Explorar cursos <span aria-hidden="true">→</span></a>
+    </header>
+
+    @if (loading()) {
+      <div class="learning-state" role="status">Cargando tus cursos…</div>
+    } @else if (errorMessage()) {
+      <div class="learning-state error-state" role="alert">
+        <span class="state-mark" aria-hidden="true">!</span>
+        <h2>No pudimos cargar tus cursos</h2>
+        <p>{{ errorMessage() }}</p>
+        <button class="button button-dark" type="button" (click)="loadCourses()">Volver a intentar</button>
+      </div>
+    } @else if (learningCourses().length === 0) {
+      <div class="learning-state empty-state">
+        <span class="state-mark" aria-hidden="true">◈</span>
+        <h2>Tu próxima aventura empieza aquí</h2>
+        <p>Aún no tienes cursos inscritos. Explora el catálogo y elige qué quieres aprender.</p>
+        <a class="button button-lime" routerLink="/catalog">Encontrar un curso <span aria-hidden="true">→</span></a>
+      </div>
+    } @else {
+      <div class="learning-summary">
+        <span class="summary-mark" aria-hidden="true">✳</span>
+        <span><strong>{{ learningCourses().length }}</strong> cursos en tu espacio</span>
+        <span class="summary-divider"></span>
+        <span><strong>{{ activeCourses() }}</strong> activos</span>
+      </div>
+
+      <div class="learning-grid">
+        @for (item of learningCourses(); track item.enrollment.id; let index = $index) {
+          <article class="learning-card">
+            <div class="learning-art" [class]="'learning-art art-tone-' + (index % 4)">
+              <span>{{ item.course.nivel || 'NEXUM LEARNING' }}</span>
+              <strong aria-hidden="true">{{ index % 4 === 0 ? '◒' : index % 4 === 1 ? '✳' : index % 4 === 2 ? '⌘' : '◈' }}</strong>
+            </div>
+            <div class="learning-card-body">
+              <div class="card-meta">
+                <span>{{ item.enrollment.estado }}</span>
+                <span>Inscrito {{ item.enrollment.fechaInscripcion | date:'mediumDate' }}</span>
+              </div>
+              <h2>{{ item.course.titulo }}</h2>
+              <p>{{ item.course.descripcion || item.course.recomendadoPara || 'Continúa con la siguiente lección de tu ruta.' }}</p>
+              <div class="progress-label"><span>Tu progreso</span><strong>{{ item.enrollment.progresoPorcentaje | number:'1.0-0' }}%</strong></div>
+              <div class="progress-track" role="progressbar" [attr.aria-valuenow]="item.enrollment.progresoPorcentaje"
+                aria-valuemin="0" aria-valuemax="100" [attr.aria-label]="'Progreso de ' + item.course.titulo">
+                <span [style.width.%]="item.enrollment.progresoPorcentaje"></span>
+              </div>
+              <a class="button button-dark continue-button" [routerLink]="['/courses', item.course.id]">
+                {{ item.enrollment.progresoPorcentaje > 0 ? 'Continuar aprendiendo' : 'Empezar curso' }} <span aria-hidden="true">→</span>
+              </a>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+</section>

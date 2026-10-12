@@ -106,7 +106,7 @@
               <div class="table-scroll">
                 <table>
                   <thead>
-                    <tr><th>Curso</th><th>Estado</th><th>Precio</th></tr>
+                    <tr><th>Curso</th><th>Estado</th><th>Precio</th><th>Contenido</th></tr>
                   </thead>
                   <tbody>
                     @for (course of courses().slice(0, 5); track course.id) {
@@ -114,6 +114,7 @@
                         <td><strong>{{ course.titulo }}</strong><small>{{ course.slug || 'Sin slug' }}</small></td>
                         <td><span class="status-pill" [class]="'status-pill status-' + course.estado.toLowerCase()">{{ statusLabel(course.estado) }}</span></td>
                         <td>{{ course.precio === null || course.precio === 0 ? 'Gratis' : (course.precio | number:'1.0-2') }}</td>
+                        <td><a class="text-button" [routerLink]="['/courses', course.id]">Abrir curso →</a></td>
                       </tr>
                     }
                   </tbody>
@@ -181,7 +182,7 @@
               @if (visibleCourses().length) {
                 <div class="table-scroll">
                   <table>
-                    <thead>                    <tr><th>Curso</th><th>Estado</th><th>Nivel</th><th>Precio</th><th>Creado</th><th>Acciones</th></tr></thead>
+                    <thead><tr><th>Curso</th><th>Estado</th><th>Nivel</th><th>Precio</th><th>Creado</th><th>Contenido</th><th>Acciones</th></tr></thead>
                     <tbody>
                       @for (course of visibleCourses(); track course.id) {
                         <tr>
@@ -199,6 +200,7 @@
                           <td>{{ course.nivel || '—' }}</td>
                           <td>{{ course.precio === null || course.precio === 0 ? 'Gratis' : (course.precio | number:'1.0-2') }}</td>
                           <td>{{ course.fechaCreacion | date:'mediumDate' }}</td>
+                          <td><a class="text-button" [routerLink]="['/courses', course.id]">Módulos y lecciones →</a></td>
                           <td class="row-actions">
                             <button class="icon-button" type="button" aria-label="Editar curso" title="Editar" (click)="openCourseEditor(course)">✎</button>
                             <button class="icon-button danger-action" type="button" aria-label="Eliminar curso" title="Eliminar" (click)="deleteCourse(course)" [disabled]="saving()">×</button>

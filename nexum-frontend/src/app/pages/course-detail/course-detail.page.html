@@ -1,0 +1,189 @@
+<section class="course-page">
+  <div class="course-wrap">
+    <a class="back-link" routerLink="/catalog"><span aria-hidden="true">←</span> Volver al catálogo</a>
+
+    @if (loading()) {
+      <div class="course-state" role="status">Cargando el curso…</div>
+    } @else if (errorMessage()) {
+      <div class="course-state error-state" role="alert">
+        <span class="state-mark" aria-hidden="true">!</span>
+        <h1>No pudimos abrir este curso</h1>
+        <p>{{ errorMessage() }}</p>
+        <a class="button button-dark" routerLink="/catalog">Ir al catálogo</a>
+      </div>
+    } @else if (course(); as course) {
+      <header class="course-hero">
+        <div class="course-hero-copy">
+          <span class="eyebrow"><span class="eyebrow-dot"></span> {{ course.categoriaAcademica || 'NEXUM LEARNING' }}</span>
+          <h1>{{ course.titulo }}<span>.</span></h1>
+          <p>{{ course.descripcion || course.recomendadoPara || 'Explora el contenido y aprende a tu propio ritmo.' }}</p>
+          <div class="course-facts">
+            @if (course.nivel) { <span>{{ course.nivel }}</span> }
+            @if (course.duracionEstimada) { <span>{{ course.duracionEstimada }}</span> }
+            <span>{{ lessons().length }} lecciones</span>
+          </div>
+        </div>
+        <aside class="course-action-card">
+          <span class="action-kicker">{{ course.precio === null || course.precio === 0 ? 'ACCESO ABIERTO' : 'INVERSIÓN' }}</span>
+          <strong>{{ course.precio === null || course.precio === 0 ? 'Gratis' : (course.precio | number:'1.0-2') }}</strong>
+          @if (auth.isAdmin()) {
+            <span class="admin-note">Vista de administración: puedes añadir módulos y lecciones al contenido.</span>
+          } @else if (enrollment()) {
+            <span class="enrolled-label">✓ Ya estás inscrito</span>
+          } @else if (course.precio === null || course.precio === 0) {
+            <button class="button button-dark enroll-button" type="button" (click)="enroll()" [disabled]="saving()">
+              {{ saving() ? 'Inscribiendo…' : 'Inscribirme al curso' }} <span aria-hidden="true">→</span>
+            </button>
+          } @else {
+            <span class="admin-note">El pago en línea todavía no está habilitado para este curso.</span>
+          }
+        </aside>
+      </header>
+
+      @if (actionMessage()) {
+        <div class="action-feedback" [class.action-error]="actionError()" [attr.role]="actionError() ? 'alert' : 'status'">{{ actionMessage() }}</div>
+      }
+
+      <section class="curriculum">
+        <div class="curriculum-heading">
+          <div>
+            <span class="section-kicker">CONTENIDO DEL CURSO</span>
+            <h2>Tu ruta de aprendizaje<span>.</span></h2>
+            <p>Avanza módulo a módulo y vuelve cuando quieras.</p>
+          </div>
+          @if (auth.isAdmin()) {
+            <button class="button button-lime" type="button" (click)="openModuleEditor()">+ Añadir módulo</button>
+          }
+        </div>
+
+        @if (modules().length === 0) {
+          <div class="empty-curriculum">
+            <span aria-hidden="true">◈</span>
+            <h3>{{ auth.isAdmin() ? 'Empieza a construir este curso' : 'El contenido estará disponible pronto' }}</h3>
+            <p>{{ auth.isAdmin() ? 'Añade el primer módulo y luego organiza sus lecciones.' : 'El equipo está preparando la ruta de aprendizaje.' }}</p>
+            @if (auth.isAdmin()) {
+              <button class="button button-dark" type="button" (click)="openModuleEditor()">Crear primer módulo</button>
+            }
+          </div>
+        } @else {
+          <div class="curriculum-grid">
+            <div class="module-list">
+              @for (module of orderedModules(); track module.id) {
+                <article class="module-card">
+                  <div class="module-topline">
+                    <span class="module-number">MÓDULO {{ module.orden.toString().padStart(2, '0') }}</span>
+                    @if (auth.isAdmin()) {
+                      <button class="small-action" type="button" (click)="openLessonEditor(module)">+ Lección</button>
+                    }
+                  </div>
+                  <h3>{{ module.titulo }}</h3>
+                  @if (module.descripcion) { <p class="module-description">{{ module.descripcion }}</p> }
+
+                  <div class="lesson-list">
+                    @for (lesson of lessons().filter(item => item.moduloId === module.id).sort((a, b) => a.orden - b.orden); track lesson.id) {
+                      <button class="lesson-row" type="button" [class.selected]="selectedLesson()?.id === lesson.id"
+                        [disabled]="!canReadLessons()" (click)="selectLesson(lesson)">
+                        <span class="lesson-icon" aria-hidden="true">{{ canReadLessons() ? '▷' : '•' }}</span>
+                        <span class="lesson-copy"><strong>{{ lesson.titulo }}</strong>
+                          <small>{{ lesson.duracionEstimada || lesson.tipo || 'Lección' }} · {{ lesson.xpOtorgada ?? 0 }} XP</small>
+                        </span>
+                        @if (isLessonComplete(lesson.id)) { <span class="lesson-complete" aria-label="Lección completada">✓</span> }
+                        @else if (!canReadLessons()) { <span class="lock-mark" aria-label="Contenido bloqueado">⌑</span> }
+                      </button>
+                    } @empty {
+                      <p class="no-lessons">Todavía no hay lecciones en este módulo.</p>
+                    }
+                  </div>
+                </article>
+
+                @if (lessonEditorModuleId() === module.id) {
+                  <form class="inline-editor" (ngSubmit)="saveLesson()">
+                    <div class="editor-title"><strong>Nueva lección</strong><button class="close-editor" type="button" (click)="lessonEditorModuleId.set(null)">×</button></div>
+                    <label>Título <input name="lessonTitle" required maxlength="255" [ngModel]="lessonDraft().titulo"
+                      (ngModelChange)="lessonDraft.update(value => ({ ...value, titulo: $event }))" /></label>
+                    <div class="form-row">
+                      <label>Tipo <select name="lessonType" [ngModel]="lessonDraft().tipo"
+                        (ngModelChange)="lessonDraft.update(value => ({ ...value, tipo: $event }))">
+                        <option value="TEXTO">Texto</option><option value="VIDEO">Video</option><option value="RETO">Reto</option>
+                      </select></label>
+                      <label>Duración <input name="lessonDuration" maxlength="30" [ngModel]="lessonDraft().duracionEstimada"
+                        (ngModelChange)="lessonDraft.update(value => ({ ...value, duracionEstimada: $event }))" /></label>
+                    </div>
+                    <label>Contenido
+                      <textarea name="lessonContent" rows="4" [ngModel]="lessonDraft().contenidoTexto"
+                        (ngModelChange)="lessonDraft.update(value => ({ ...value, contenidoTexto: $event }))"></textarea>
+                    </label>
+                    <label>URL de video (opcional) <input name="lessonVideo" type="url" [ngModel]="lessonDraft().videoUrl"
+                      (ngModelChange)="lessonDraft.update(value => ({ ...value, videoUrl: $event }))" /></label>
+                    <div class="form-row">
+                      <label>Dificultad <input name="lessonDifficulty" maxlength="20" [ngModel]="lessonDraft().dificultad"
+                        (ngModelChange)="lessonDraft.update(value => ({ ...value, dificultad: $event }))" /></label>
+                      <label>XP <input name="lessonXp" type="number" min="0" [ngModel]="lessonDraft().xpOtorgada"
+                        (ngModelChange)="lessonDraft.update(value => ({ ...value, xpOtorgada: $event }))" /></label>
+                    </div>
+                    <button class="button button-dark" type="submit" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar lección' }}</button>
+                  </form>
+                }
+              }
+            </div>
+
+            <aside class="lesson-viewer">
+              @if (selectedLesson(); as lesson) {
+                <span class="section-kicker">LECCIÓN {{ lesson.orden.toString().padStart(2, '0') }}</span>
+                <h3>{{ lesson.titulo }}</h3>
+                @if (lesson.duracionEstimada) { <span class="viewer-duration">{{ lesson.duracionEstimada }}</span> }
+                @if (lesson.contenidoTexto) { <p class="lesson-content">{{ lesson.contenidoTexto }}</p> }
+                @if (lesson.videoUrl) {
+                  <a class="video-link" [href]="lesson.videoUrl" target="_blank" rel="noopener noreferrer">Abrir video de la lección ↗</a>
+                }
+                @if (!lesson.contenidoTexto && !lesson.videoUrl) {
+                  <p class="viewer-placeholder">Esta lección todavía no tiene contenido publicado.</p>
+                }
+                @if (enrollment()) {
+                  <button class="button button-lime complete-button" type="button" (click)="completeLesson(lesson)"
+                    [disabled]="saving() || isLessonComplete(lesson.id)">
+                    {{ isLessonComplete(lesson.id) ? 'Lección completada ✓' : saving() ? 'Guardando…' : 'Marcar como completada' }}
+                  </button>
+                }
+              } @else if (canReadLessons()) {
+                <span class="viewer-mark" aria-hidden="true">✳</span>
+                <h3>Un paso a la vez</h3>
+                <p>Selecciona una lección para empezar. Cada avance te acerca a tu siguiente logro.</p>
+              } @else {
+                <span class="viewer-mark" aria-hidden="true">⌑</span>
+                <h3>Tu siguiente paso</h3>
+                <p>Inscríbete para acceder al contenido completo de las lecciones.</p>
+                @if (course()?.precio === null || course()?.precio === 0) {
+                  <button class="button button-dark" type="button" (click)="enroll()" [disabled]="saving()">Inscribirme al curso</button>
+                } @else {
+                  <p class="payment-note">La inscripción estará disponible cuando se integre el pago en línea.</p>
+                }
+              }
+            </aside>
+          </div>
+        }
+      </section>
+    }
+  </div>
+
+  @if (moduleEditorOpen()) {
+    <div class="modal-backdrop" (click)="moduleEditorOpen.set(false)">
+      <form class="module-modal" (ngSubmit)="saveModule()" (click)="$event.stopPropagation()">
+        <div class="editor-title"><div><span class="section-kicker">ESTRUCTURA DEL CURSO</span><h2>Nuevo módulo</h2></div>
+          <button class="close-editor" type="button" aria-label="Cerrar" (click)="moduleEditorOpen.set(false)">×</button>
+        </div>
+        <label>Título <input name="moduleTitle" required maxlength="255" [ngModel]="moduleDraft().titulo"
+          (ngModelChange)="moduleDraft.update(value => ({ ...value, titulo: $event }))" /></label>
+        <label>Descripción <textarea name="moduleDescription" rows="3" [ngModel]="moduleDraft().descripcion"
+          (ngModelChange)="moduleDraft.update(value => ({ ...value, descripcion: $event }))"></textarea></label>
+        <label>Slug (opcional) <input name="moduleSlug" maxlength="180" [ngModel]="moduleDraft().slug"
+          (ngModelChange)="moduleDraft.update(value => ({ ...value, slug: $event }))" /></label>
+        @if (actionMessage()) { <div class="action-feedback" [class.action-error]="actionError()" [attr.role]="actionError() ? 'alert' : 'status'">{{ actionMessage() }}</div> }
+        <div class="modal-actions">
+          <button class="button button-quiet" type="button" (click)="moduleEditorOpen.set(false)" [disabled]="saving()">Cancelar</button>
+          <button class="button button-dark" type="submit" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Crear módulo' }}</button>
+        </div>
+      </form>
+    </div>
+  }
+</section>
