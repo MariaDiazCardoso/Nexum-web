@@ -15,7 +15,6 @@ describe('AuthService', () => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
-    authService = TestBed.inject(AuthService);
     httpTestingController = TestBed.inject(HttpTestingController);
   });
 
@@ -25,6 +24,7 @@ describe('AuthService', () => {
   });
 
   it('stores the JWT and current user after successful login', () => {
+    authService = TestBed.inject(AuthService);
     const response: LoginResponse = {
       token: 'test-token',
       tipo: 'Bearer',
@@ -51,16 +51,33 @@ describe('AuthService', () => {
     request.flush(response);
 
     expect(globalThis.sessionStorage.getItem('nexum.accessToken')).toBe('test-token');
+    expect(globalThis.sessionStorage.getItem('nexum.userRole')).toBe('USUARIO');
     expect(authService.user()?.id).toBe('user-1');
+    expect(authService.role()).toBe('USUARIO');
+    expect(authService.isAdmin()).toBe(false);
     expect(authService.isAuthenticated()).toBe(true);
+  });
+
+  it('restores the administrator role from the current browser session', () => {
+    globalThis.sessionStorage.setItem('nexum.accessToken', 'admin-token');
+    globalThis.sessionStorage.setItem('nexum.userRole', 'ADMINISTRADOR');
+
+    const restoredAuthService = TestBed.inject(AuthService);
+
+    expect(restoredAuthService.isAuthenticated()).toBe(true);
+    expect(restoredAuthService.isAdmin()).toBe(true);
   });
 
   it('clears the session when logging out', () => {
     globalThis.sessionStorage.setItem('nexum.accessToken', 'test-token');
+    globalThis.sessionStorage.setItem('nexum.userRole', 'ADMINISTRADOR');
+    authService = TestBed.inject(AuthService);
     authService.logout();
 
     expect(globalThis.sessionStorage.getItem('nexum.accessToken')).toBeNull();
+    expect(globalThis.sessionStorage.getItem('nexum.userRole')).toBeNull();
     expect(authService.user()).toBeNull();
+    expect(authService.role()).toBeNull();
     expect(authService.isAuthenticated()).toBe(false);
   });
 });

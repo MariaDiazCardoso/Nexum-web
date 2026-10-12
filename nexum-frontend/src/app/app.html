@@ -9,6 +9,9 @@
       <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
         Explorar cursos
       </a>
+      @if (auth.isAdmin()) {
+        <a routerLink="/admin" routerLinkActive="active">Panel administrador</a>
+      }
     </nav>
 
     <div class="header-actions">

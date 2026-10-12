@@ -27,6 +27,8 @@ Las tareas del backend están en `docs/tareas_codigo_nexum_v2.md`.
 > Las plataformas de BD suelen entregar `postgresql://usuario:clave@host/base`.
 > Spring necesita el formato JDBC: `jdbc:postgresql://host/base?sslmode=require`, con el usuario y la clave en `DB_USER` y `DB_PASSWORD`.
 
+El registro público crea únicamente cuentas `USUARIO`. Para crear el primer administrador, define `ADMIN_EMAIL` y `ADMIN_PASSWORD` como variables del backend antes del primer arranque. Si ese email ya existe, el inicializador no cambia su rol.
+
 ## Ejecutar en local
 
 ```bash

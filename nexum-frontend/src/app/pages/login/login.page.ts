@@ -36,9 +36,9 @@ export class LoginPage {
 
     this.submitting.set(true);
     this.authService.login(this.form.getRawValue()).subscribe({
-      next: () => {
+      next: (response) => {
         this.submitting.set(false);
-        void this.router.navigateByUrl('/catalog');
+        void this.router.navigateByUrl(response.usuario.rol === 'ADMINISTRADOR' ? '/admin' : '/catalog');
       },
       error: (error: unknown) => {
         this.submitting.set(false);

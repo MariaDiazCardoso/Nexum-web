@@ -1,0 +1,431 @@
+<section class="admin-page">
+  <div class="admin-layout">
+    <aside class="admin-sidebar" aria-label="Navegación del panel administrador">
+      <div class="sidebar-heading">
+        <span class="sidebar-mark" aria-hidden="true">n</span>
+        <div>
+          <span class="sidebar-kicker">ESPACIO DE TRABAJO</span>
+          <strong>Administración</strong>
+        </div>
+      </div>
+
+      <span class="nav-label">GESTIÓN</span>
+      <nav class="admin-nav">
+        <button type="button" [class.active]="section() === 'overview'" (click)="selectSection('overview')">
+          <span aria-hidden="true">◫</span> Resumen
+        </button>
+        <button type="button" [class.active]="section() === 'courses'" (click)="selectSection('courses')">
+          <span aria-hidden="true">◈</span> Cursos <span class="nav-count">{{ courses().length }}</span>
+        </button>
+        <button type="button" [class.active]="section() === 'users'" (click)="selectSection('users')">
+          <span aria-hidden="true">◎</span> Personas <span class="nav-count">{{ users().length }}</span>
+        </button>
+        <button type="button" [class.active]="section() === 'categories'" (click)="selectSection('categories')">
+          <span aria-hidden="true">✳</span> Categorías <span class="nav-count">{{ categories().length }}</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-note">
+        <span aria-hidden="true">✳</span>
+        <p>Un buen espacio de aprendizaje empieza con una comunidad cuidada.</p>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-heading">
+        <div>
+          <span class="eyebrow"><span class="eyebrow-dot"></span> NEXUM · ADMINISTRACIÓN</span>
+          <h1>{{ sectionTitle() }}<span>.</span></h1>
+          <p>Una mirada clara a lo que está creciendo en Nexum.</p>
+        </div>
+        <div class="heading-actions">
+          @if (section() === 'courses') {
+            <button class="button button-lime refresh-button" type="button" (click)="openCourseEditor()">
+              <span aria-hidden="true">+</span> Nuevo curso
+            </button>
+          } @else if (section() === 'categories') {
+            <button class="button button-lime refresh-button" type="button" (click)="openCategoryEditor()">
+              <span aria-hidden="true">+</span> Nueva categoría
+            </button>
+          }
+          <button class="button button-dark refresh-button" type="button" (click)="loadDashboard()" [disabled]="loading() || saving()">
+            <span aria-hidden="true">↻</span> Actualizar
+          </button>
+        </div>
+      </header>
+
+      @if (loading()) {
+        <div class="loading-state" role="status">Cargando la información del espacio…</div>
+      } @else if (errorMessage()) {
+        <div class="error-state" role="alert">
+          <span class="state-symbol" aria-hidden="true">!</span>
+          <h2>No se pudo abrir el panel</h2>
+          <p>{{ errorMessage() }}</p>
+          <button class="button button-dark" type="button" (click)="loadDashboard()">Volver a intentar</button>
+        </div>
+      } @else {
+        @if (mutationSuccess()) {
+          <div class="feedback success-feedback" role="status">{{ mutationSuccess() }}</div>
+        }
+        @if (mutationError()) {
+          <div class="feedback error-feedback" role="alert">{{ mutationError() }}</div>
+        }
+        @if (section() === 'overview') {
+          <section class="stats-grid" aria-label="Indicadores generales">
+            <article class="stat-card stat-highlight">
+              <span class="stat-icon" aria-hidden="true">◈</span>
+              <span class="stat-label">Cursos publicados</span>
+              <strong>{{ publishedCourses() }}</strong>
+              <small>de {{ courses().length }} cursos en total</small>
+            </article>
+            <article class="stat-card">
+              <span class="stat-icon" aria-hidden="true">◎</span>
+              <span class="stat-label">Personas registradas</span>
+              <strong>{{ users().length }}</strong>
+              <small>{{ verifiedUsers() }} con correo verificado</small>
+            </article>
+            <article class="stat-card">
+              <span class="stat-icon" aria-hidden="true">✳</span>
+              <span class="stat-label">Categorías</span>
+              <strong>{{ categories().length }}</strong>
+              <small>Áreas para descubrir</small>
+            </article>
+          </section>
+
+          <section class="content-card overview-courses">
+            <div class="card-heading">
+              <div>
+                <span class="section-kicker">CONTENIDO</span>
+                <h2>Cursos recientes</h2>
+              </div>
+              <button class="text-button" type="button" (click)="selectSection('courses')">
+                Ver todos <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            @if (courses().length) {
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr><th>Curso</th><th>Estado</th><th>Precio</th></tr>
+                  </thead>
+                  <tbody>
+                    @for (course of courses().slice(0, 5); track course.id) {
+                      <tr>
+                        <td><strong>{{ course.titulo }}</strong><small>{{ course.slug || 'Sin slug' }}</small></td>
+                        <td><span class="status-pill" [class]="'status-pill status-' + course.estado.toLowerCase()">{{ statusLabel(course.estado) }}</span></td>
+                        <td>{{ course.precio === null || course.precio === 0 ? 'Gratis' : (course.precio | number:'1.0-2') }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            } @else {
+              <div class="empty-inline"><span aria-hidden="true">◈</span><p>Aún no hay cursos registrados.</p></div>
+            }
+          </section>
+
+          <section class="content-card community-card">
+            <div class="card-heading">
+              <div>
+                <span class="section-kicker">COMUNIDAD</span>
+                <h2>Personas recientes</h2>
+              </div>
+              <button class="text-button" type="button" (click)="selectSection('users')">
+                Ver personas <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            @if (users().length) {
+              <div class="people-list">
+                @for (user of users().slice(0, 4); track user.id) {
+                  <div class="person-row">
+                    <span class="person-avatar">{{ user.nombre.charAt(0) }}{{ user.apellido.charAt(0) }}</span>
+                    <span class="person-info"><strong>{{ user.nombre }} {{ user.apellido }}</strong><small>{{ user.email }}</small></span>
+                    <span class="role-label" [class.admin-role]="user.rol === 'ADMINISTRADOR'">
+                      {{ user.rol === 'ADMINISTRADOR' ? 'Admin' : 'Usuario' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-inline"><span aria-hidden="true">◎</span><p>Aún no hay personas registradas.</p></div>
+            }
+          </section>
+        } @else {
+          <section class="content-card data-section">
+            <div class="toolbar">
+              <label class="search-box">
+                <span aria-hidden="true">⌕</span>
+                <input
+                  #searchInput
+                  type="search"
+                  [placeholder]="section() === 'users' ? 'Buscar por nombre o correo' : 'Buscar en ' + sectionTitle().toLocaleLowerCase()"
+                  aria-label="Buscar"
+                  (input)="searchTerm.set(searchInput.value)"
+                />
+              </label>
+              @if (section() === 'courses') {
+                <label class="status-filter">
+                  <span class="sr-only">Filtrar cursos por estado</span>
+                  <select [ngModel]="courseStatus()" (ngModelChange)="courseStatus.set($event)">
+                    <option value="TODOS">Todos los estados</option>
+                    <option value="PUBLICADO">Publicado</option>
+                    <option value="REVISION">En revisión</option>
+                    <option value="BORRADOR">Borrador</option>
+                    <option value="ARCHIVADO">Archivado</option>
+                  </select>
+                </label>
+              }
+            </div>
+
+            @if (section() === 'courses') {
+              @if (visibleCourses().length) {
+                <div class="table-scroll">
+                  <table>
+                    <thead>                    <tr><th>Curso</th><th>Estado</th><th>Nivel</th><th>Precio</th><th>Creado</th><th>Acciones</th></tr></thead>
+                    <tbody>
+                      @for (course of visibleCourses(); track course.id) {
+                        <tr>
+                          <td><strong>{{ course.titulo }}</strong><small>{{ course.slug || 'Sin slug' }}</small></td>
+                          <td>
+                            <label class="sr-only" [for]="'course-status-' + course.id">Estado de {{ course.titulo }}</label>
+                            <select class="table-select" [id]="'course-status-' + course.id" [ngModel]="course.estado"
+                              (ngModelChange)="changeCourseStatus(course, $event)" [disabled]="saving()">
+                              <option value="BORRADOR">Borrador</option>
+                              <option value="REVISION">En revisión</option>
+                              <option value="PUBLICADO">Publicado</option>
+                              <option value="ARCHIVADO">Archivado</option>
+                            </select>
+                          </td>
+                          <td>{{ course.nivel || '—' }}</td>
+                          <td>{{ course.precio === null || course.precio === 0 ? 'Gratis' : (course.precio | number:'1.0-2') }}</td>
+                          <td>{{ course.fechaCreacion | date:'mediumDate' }}</td>
+                          <td class="row-actions">
+                            <button class="icon-button" type="button" aria-label="Editar curso" title="Editar" (click)="openCourseEditor(course)">✎</button>
+                            <button class="icon-button danger-action" type="button" aria-label="Eliminar curso" title="Eliminar" (click)="deleteCourse(course)" [disabled]="saving()">×</button>
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              } @else {
+                <div class="empty-inline"><span aria-hidden="true">⌕</span><p>No hay cursos que coincidan con la búsqueda.</p></div>
+              }
+            } @else if (section() === 'users') {
+              @if (visibleUsers().length) {
+                <div class="table-scroll">
+                  <table>
+                    <thead><tr><th>Persona</th><th>Rol</th><th>Verificación</th><th>Registro</th><th>XP</th><th>Acciones</th></tr></thead>
+                    <tbody>
+                      @for (user of visibleUsers(); track user.id) {
+                        <tr>
+                          <td class="user-cell"><span class="person-avatar">{{ user.nombre.charAt(0) }}{{ user.apellido.charAt(0) }}</span><span><strong>{{ user.nombre }} {{ user.apellido }}</strong><small>{{ user.email }}</small></span></td>
+                          <td>
+                            <label class="sr-only" [for]="'user-role-' + user.id">Rol de {{ user.nombre }} {{ user.apellido }}</label>
+                            <select class="table-select" [id]="'user-role-' + user.id" [ngModel]="user.rol"
+                              (ngModelChange)="changeUserRole(user, $event)" [disabled]="saving()">
+                              <option value="USUARIO">Usuario</option>
+                              <option value="ADMINISTRADOR">Administrador</option>
+                            </select>
+                          </td>
+                          <td><button class="verification verification-button" [class.verified]="user.emailVerificado"
+                            type="button" (click)="toggleUserVerification(user)" [disabled]="saving()">
+                            {{ user.emailVerificado ? 'Verificado' : 'Marcar verificado' }}
+                          </button></td>
+                          <td>{{ user.fechaRegistro | date:'mediumDate' }}</td>
+                          <td>{{ user.puntosXp }}</td>
+                          <td>
+                            @if (user.rol !== 'ADMINISTRADOR') {
+                                <button class="icon-button" type="button" aria-label="Editar persona"
+                                  title="Editar persona" (click)="openUserEditor(user)">✎</button>
+                                <button class="icon-button danger-action" type="button" aria-label="Eliminar persona"
+                                  title="Eliminar persona" (click)="deleteUser(user)" [disabled]="saving()">×</button>
+                              } @else {
+                                <button class="icon-button" type="button" aria-label="Editar persona"
+                                  title="Editar persona" (click)="openUserEditor(user)">✎</button>
+                                <span class="protected-label">Protegida</span>
+                            }
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              } @else {
+                <div class="empty-inline"><span aria-hidden="true">⌕</span><p>No hay personas que coincidan con la búsqueda.</p></div>
+              }
+            } @else {
+              @if (visibleCategories().length) {
+                <div class="category-grid">
+                  @for (category of visibleCategories(); track category.id; let index = $index) {
+                    <article class="category-card">
+                      <span class="category-symbol" [class]="'category-symbol category-tone-' + (index % 4)">{{ category.iconoUrl ? '↗' : '✳' }}</span>
+                      <div><span class="section-kicker">ÁREA {{ (index + 1).toString().padStart(2, '0') }}</span><h3>{{ category.nombre }}</h3></div>
+                      <div class="category-actions">
+                        <button class="icon-button" type="button" aria-label="Editar categoría" title="Editar categoría" (click)="openCategoryEditor(category)">✎</button>
+                        <button class="icon-button danger-action" type="button" aria-label="Eliminar categoría" title="Eliminar categoría" (click)="deleteCategory(category)" [disabled]="saving()">×</button>
+                      </div>
+                    </article>
+                  }
+                </div>
+              } @else {
+                <div class="empty-inline"><span aria-hidden="true">⌕</span><p>No hay categorías que coincidan con la búsqueda.</p></div>
+              }
+            }
+          </section>
+        }
+
+        <footer class="admin-footer">
+          <span>Datos sincronizados con Nexum</span>
+          <span>{{ users().length }} personas · {{ courses().length }} cursos · {{ categories().length }} categorías</span>
+        </footer>
+      }
+    </div>
+  </div>
+
+  @if (editorType()) {
+    <div class="modal-backdrop" (click)="closeEditor()">
+      <section class="editor-modal" role="dialog" aria-modal="true"
+        [attr.aria-labelledby]="editorType() === 'course' ? 'course-editor-title' : editorType() === 'category' ? 'category-editor-title' : 'user-editor-title'"
+        (click)="$event.stopPropagation()">
+        @if (editorType() === 'course') {
+          <header class="modal-heading">
+            <div><span class="section-kicker">GESTIÓN DE CONTENIDO</span><h2 id="course-editor-title">{{ editingId() ? 'Editar curso' : 'Crear curso' }}</h2></div>
+            <button class="icon-button" type="button" aria-label="Cerrar" (click)="closeEditor()">×</button>
+          </header>
+          <form class="editor-form" (ngSubmit)="saveCourse()">
+            <label>Título
+              <input name="courseTitle" required maxlength="255" [ngModel]="courseEditor().titulo"
+                (ngModelChange)="courseEditor.update(value => ({ ...value, titulo: $event }))" />
+            </label>
+            <div class="form-two-columns">
+              <label>Slug
+                <input name="courseSlug" maxlength="255" [ngModel]="courseEditor().slug"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, slug: $event }))" />
+              </label>
+              <label>Responsable administrador
+                <select name="courseOwner" required [ngModel]="courseEditor().responsableId"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, responsableId: $event }))">
+                  <option value="">Selecciona una persona</option>
+                  @for (user of users(); track user.id) {
+                    @if (user.rol === 'ADMINISTRADOR') {
+                      <option [value]="user.id">{{ user.nombre }} {{ user.apellido }}</option>
+                    }
+                  }
+                </select>
+              </label>
+            </div>
+            <label>Descripción
+              <textarea name="courseDescription" rows="3" [ngModel]="courseEditor().descripcion"
+                (ngModelChange)="courseEditor.update(value => ({ ...value, descripcion: $event }))"></textarea>
+            </label>
+            <div class="form-three-columns">
+              <label>Precio
+                <input name="coursePrice" type="number" min="0" step="0.01" [ngModel]="courseEditor().precio"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, precio: $event === '' ? null : $event }))" />
+              </label>
+              <label>Nivel
+                <select name="courseLevel" [ngModel]="courseEditor().nivel"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, nivel: $event }))">
+                  <option value="">Sin nivel</option><option value="PRINCIPIANTE">Principiante</option>
+                  <option value="INTERMEDIO">Intermedio</option><option value="AVANZADO">Avanzado</option>
+                </select>
+              </label>
+              <label>Estado
+                <select name="courseState" [ngModel]="courseEditor().estado"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, estado: $event }))">
+                  <option value="BORRADOR">Borrador</option><option value="REVISION">En revisión</option>
+                  <option value="PUBLICADO">Publicado</option><option value="ARCHIVADO">Archivado</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-two-columns">
+              <label>Duración estimada
+                <input name="courseDuration" maxlength="50" [ngModel]="courseEditor().duracionEstimada"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, duracionEstimada: $event }))" />
+              </label>
+              <label>Ruta
+                <input name="courseRoute" maxlength="50" [ngModel]="courseEditor().ruta"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, ruta: $event }))" />
+              </label>
+            </div>
+            <div class="form-two-columns">
+              <label>Categoría académica
+                <input name="academicCategory" maxlength="80" [ngModel]="courseEditor().categoriaAcademica"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, categoriaAcademica: $event }))" />
+              </label>
+              <label>Recomendado para
+                <input name="recommendedFor" [ngModel]="courseEditor().recomendadoPara"
+                  (ngModelChange)="courseEditor.update(value => ({ ...value, recomendadoPara: $event }))" />
+              </label>
+            </div>
+            <fieldset class="category-options">
+              <legend>Categorías</legend>
+              @for (category of categories(); track category.id) {
+                <label><input #categoryCheckbox type="checkbox" [checked]="courseEditor().categoriaIds.includes(category.id)"
+                  (change)="toggleCourseCategory(category.id, categoryCheckbox.checked)" /> {{ category.nombre }}</label>
+              } @empty {
+                <span>Aún no hay categorías. Puedes crearlas desde la sección Categorías.</span>
+              }
+            </fieldset>
+            @if (mutationError()) { <div class="feedback error-feedback" role="alert">{{ mutationError() }}</div> }
+            <div class="modal-actions">
+              <button class="button button-quiet" type="button" (click)="closeEditor()" [disabled]="saving()">Cancelar</button>
+              <button class="button button-dark" type="submit" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar curso' }}</button>
+            </div>
+          </form>
+        } @else if (editorType() === 'category') {
+          <header class="modal-heading">
+            <div><span class="section-kicker">ORGANIZA EL CATÁLOGO</span><h2 id="category-editor-title">{{ editingId() ? 'Editar categoría' : 'Nueva categoría' }}</h2></div>
+            <button class="icon-button" type="button" aria-label="Cerrar" (click)="closeEditor()">×</button>
+          </header>
+          <form class="editor-form" (ngSubmit)="saveCategory()">
+            <label>Nombre
+              <input name="categoryName" required maxlength="100" [ngModel]="categoryEditor().nombre"
+                (ngModelChange)="categoryEditor.update(value => ({ ...value, nombre: $event }))" />
+            </label>
+            <label>URL del icono <span class="optional-label">(opcional)</span>
+              <input name="categoryIcon" type="url" maxlength="255" [ngModel]="categoryEditor().iconoUrl"
+                (ngModelChange)="categoryEditor.update(value => ({ ...value, iconoUrl: $event }))" />
+            </label>
+            @if (mutationError()) { <div class="feedback error-feedback" role="alert">{{ mutationError() }}</div> }
+            <div class="modal-actions">
+              <button class="button button-quiet" type="button" (click)="closeEditor()" [disabled]="saving()">Cancelar</button>
+              <button class="button button-dark" type="submit" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar categoría' }}</button>
+            </div>
+          </form>
+        } @else {
+          <header class="modal-heading">
+            <div><span class="section-kicker">GESTIÓN DE COMUNIDAD</span><h2 id="user-editor-title">Editar persona</h2></div>
+            <button class="icon-button" type="button" aria-label="Cerrar" (click)="closeEditor()">×</button>
+          </header>
+          <form class="editor-form" (ngSubmit)="saveUser()">
+            <div class="form-two-columns">
+              <label>Nombre
+                <input name="userName" required maxlength="100" [ngModel]="userEditor().nombre"
+                  (ngModelChange)="userEditor.update(value => ({ ...value, nombre: $event }))" />
+              </label>
+              <label>Apellido
+                <input name="userSurname" required maxlength="100" [ngModel]="userEditor().apellido"
+                  (ngModelChange)="userEditor.update(value => ({ ...value, apellido: $event }))" />
+              </label>
+            </div>
+            <label>Correo electrónico
+              <input name="userEmail" type="email" required maxlength="255" [ngModel]="userEditor().email"
+                (ngModelChange)="userEditor.update(value => ({ ...value, email: $event }))" />
+            </label>
+            <label>URL del avatar <span class="optional-label">(opcional)</span>
+              <input name="userAvatar" type="url" maxlength="255" [ngModel]="userEditor().avatarUrl"
+                (ngModelChange)="userEditor.update(value => ({ ...value, avatarUrl: $event }))" />
+            </label>
+            @if (mutationError()) { <div class="feedback error-feedback" role="alert">{{ mutationError() }}</div> }
+            <div class="modal-actions">
+              <button class="button button-quiet" type="button" (click)="closeEditor()" [disabled]="saving()">Cancelar</button>
+              <button class="button button-dark" type="submit" [disabled]="saving()">{{ saving() ? 'Guardando…' : 'Guardar persona' }}</button>
+            </div>
+          </form>
+        }
+      </section>
+    </div>
+  }
+</section>
