@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth.service';
 
 @Component({
@@ -11,8 +11,10 @@ import { AuthService } from './core/auth.service';
 export class App {
   protected readonly currentYear = new Date().getFullYear();
   protected readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
 
   protected logout(): void {
     this.auth.logout();
+    void this.router.navigate(['/register']);
   }
 }

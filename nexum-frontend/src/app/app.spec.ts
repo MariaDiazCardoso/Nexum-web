@@ -1,12 +1,24 @@
+import { provideHttpClient } from '@angular/common/http';
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { App } from './app';
+
+@Component({
+  standalone: true,
+  template: '',
+})
+class RegisterRouteComponent {}
 
 describe('App', () => {
   beforeEach(async () => {
+    globalThis.sessionStorage.clear();
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      providers: [
+        provideHttpClient(),
+        provideRouter([{ path: 'register', component: RegisterRouteComponent }]),
+      ],
     }).compileComponents();
   });
 
@@ -23,4 +35,21 @@ describe('App', () => {
     expect(compiled.querySelector('.brand')?.textContent).toContain('nexum');
     expect(compiled.querySelector('.main-nav a')?.textContent).toContain('Explorar cursos');
   });
+
+  it.each(['USUARIO', 'ADMINISTRADOR'] as const)(
+    'clears the %s session and navigates to registration when logging out',
+    async (role) => {
+      globalThis.sessionStorage.setItem('nexum.accessToken', 'test-token');
+      globalThis.sessionStorage.setItem('nexum.userRole', role);
+      globalThis.sessionStorage.setItem('nexum.userId', `${role.toLowerCase()}-1`);
+
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      fixture.nativeElement.querySelector('.logout-button').click();
+      await fixture.whenStable();
+
+      expect(TestBed.inject(Router).url).toBe('/register');
+      expect(globalThis.sessionStorage.getItem('nexum.accessToken')).toBeNull();
+    },
+  );
 });
