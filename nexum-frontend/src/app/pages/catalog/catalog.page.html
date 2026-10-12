@@ -1,0 +1,170 @@
+<section class="catalog-page">
+  <div class="hero">
+    <div class="hero-content">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> APRENDE A TU MANERA</span>
+      <h1>Lo que quieres ser<br />empieza con <span>lo que aprendes.</span></h1>
+      <p>Descubre cursos creados para llevar tu curiosidad a donde quieres llegar.</p>
+      <a class="button button-lime hero-cta" routerLink="/register">Encuentra tu próximo curso <span aria-hidden="true">→</span></a>
+      <div class="hero-proof">
+        <span class="proof-avatars" aria-hidden="true"><i>V</i><i>M</i><i>A</i></span>
+        <span>Aprende a tu ritmo, desde donde estés</span>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="art-sun"></div>
+      <div class="art-window">
+        <div class="window-top"><span></span><span></span><span></span><b>tu próximo paso</b></div>
+        <div class="window-body">
+          <div class="window-sidebar"><i></i><i></i><i></i><i></i></div>
+          <div class="window-content">
+            <span class="art-label">NUEVA HABILIDAD</span>
+            <strong>Un mundo<br />por descubrir.</strong>
+            <div class="art-progress"><span></span></div>
+            <small>Vas por buen camino</small>
+          </div>
+        </div>
+      </div>
+      <div class="floating-card floating-top"><span class="float-spark">✳</span><span><b>Aprender</b><small>abre posibilidades</small></span></div>
+      <div class="floating-card floating-bottom"><span class="float-check">✓</span><span><b>Un paso más</b><small>cada día cuenta</small></span></div>
+      <div class="art-leaf leaf-one"></div>
+      <div class="art-leaf leaf-two"></div>
+    </div>
+  </div>
+
+  <div class="catalog-content">
+    <div class="section-heading">
+      <div>
+        <span class="section-kicker">ELIGE TU SIGUIENTE PASO</span>
+        <h2>Explora cursos<span>.</span></h2>
+        <p>Ideas, herramientas y habilidades para seguir creciendo.</p>
+      </div>
+      <span class="course-count">{{ filteredCourses().length }} cursos</span>
+    </div>
+
+    <div class="filter-bar">
+      <label class="search-box">
+        <span aria-hidden="true">⌕</span>
+        <input
+          #searchInput
+          type="search"
+          placeholder="¿Qué te gustaría aprender?"
+          aria-label="Buscar cursos"
+          (input)="setSearch(searchInput.value)"
+        />
+        <kbd>/</kbd>
+      </label>
+      <label class="select-wrap">
+        <span class="sr-only">Filtrar por categoría</span>
+        <select [ngModel]="selectedCategory()" (ngModelChange)="selectedCategory.set($event)">
+          <option value="Todas">Todas las categorías</option>
+          @for (category of categories(); track category.id) {
+            <option [value]="category.nombre">{{ category.nombre }}</option>
+          }
+        </select>
+        <span class="select-chevron" aria-hidden="true">⌄</span>
+      </label>
+      <label class="select-wrap">
+        <span class="sr-only">Filtrar por nivel</span>
+        <select [ngModel]="selectedLevel()" (ngModelChange)="selectedLevel.set($event)">
+          <option value="Todos los niveles">Todos los niveles</option>
+          <option value="PRINCIPIANTE">Principiante</option>
+          <option value="INTERMEDIO">Intermedio</option>
+          <option value="AVANZADO">Avanzado</option>
+        </select>
+        <span class="select-chevron" aria-hidden="true">⌄</span>
+      </label>
+    </div>
+
+    @if (loading()) {
+      <div class="course-grid" aria-label="Cargando cursos">
+        @for (item of [1, 2, 3]; track item) {
+          <div class="skeleton-card">
+            <div class="skeleton-art"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line short"></div>
+          </div>
+        }
+      </div>
+    } @else if (errorMessage()) {
+      <div class="state-card" role="status">
+        <span class="state-icon" aria-hidden="true">↗</span>
+        <h3>{{ errorMessage() }}</h3>
+        <p>Tu siguiente paso de aprendizaje está a un clic de distancia.</p>
+        <div class="state-actions">
+          @if (errorMessage().includes('Inicia sesión')) {
+            <a class="button button-dark" routerLink="/login">Iniciar sesión</a>
+            <a class="text-link" routerLink="/register">Crear una cuenta</a>
+          } @else {
+            <button class="button button-dark" type="button" (click)="loadCatalog()">Volver a intentar</button>
+          }
+        </div>
+      </div>
+    } @else if (filteredCourses().length === 0) {
+      <div class="state-card empty-state">
+        <span class="state-icon" aria-hidden="true">⌕</span>
+        <h3>{{ courses().length ? 'No encontramos cursos con esos filtros.' : 'Pronto habrá cursos para explorar.' }}</h3>
+        <p>{{ courses().length ? 'Prueba con otra búsqueda o categoría.' : 'Estamos preparando nuevas formas de aprender para ti.' }}</p>
+        @if (courses().length) {
+          <button
+            class="button button-dark"
+            type="button"
+            (click)="searchTerm.set(''); selectedCategory.set('Todas'); selectedLevel.set('Todos los niveles')"
+          >
+            Limpiar filtros
+          </button>
+        }
+      </div>
+    } @else {
+      <div class="course-grid">
+        @for (course of filteredCourses(); track course.id; let index = $index) {
+          <article class="course-card">
+            <div class="course-art" [class]="'course-art art-tone-' + (index % 4)">
+              <span class="art-number">N° {{ (index + 1).toString().padStart(2, '0') }}</span>
+              <span class="course-symbol" aria-hidden="true">{{ index % 4 === 0 ? '◒' : index % 4 === 1 ? '✳' : index % 4 === 2 ? '⌘' : '◈' }}</span>
+              @if (course.nivel) {
+                <span class="level-badge">{{ course.nivel }}</span>
+              }
+              <span class="art-caption">{{ course.categoriaAcademica || course.categoryNames[0] || 'NEXUM LEARNING' }}</span>
+            </div>
+            <div class="course-details">
+              <div class="course-meta">
+                @if (course.categoryNames.length) {
+                  <span>{{ course.categoryNames[0] }}</span>
+                } @else {
+                  <span>Curso Nexum</span>
+                }
+                @if (course.duracionEstimada) {
+                  <span class="meta-dot">·</span>
+                  <span>{{ course.duracionEstimada }}</span>
+                }
+              </div>
+              <h3>{{ course.titulo }}</h3>
+              <p class="course-description">{{ course.descripcion || course.recomendadoPara || 'Una experiencia de aprendizaje diseñada para ayudarte a avanzar.' }}</p>
+              <div class="course-bottom">
+                <span class="course-price">
+                  @if (course.precio === null || course.precio === 0) {
+                    Gratis
+                  } @else {
+                    {{ course.precio | number:'1.0-2' }}
+                  }
+                </span>
+                @if (course.promedioValoracion) {
+                  <span class="rating"><span aria-hidden="true">★</span> {{ course.promedioValoracion | number:'1.1-1' }}</span>
+                }
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </div>
+
+  <section class="bottom-cta">
+    <div class="cta-mark" aria-hidden="true">✳</div>
+    <div>
+      <span class="section-kicker">ESTE ES TU MOMENTO</span>
+      <h2>Un nuevo comienzo<br />puede ser hoy<span>.</span></h2>
+    </div>
+    <a class="button button-dark" routerLink="/register">Empieza a aprender <span aria-hidden="true">→</span></a>
+  </section>
+</section>

@@ -1,0 +1,59 @@
+@use '../login/login.page.scss';
+
+.auth-card h2 {
+  font-size: 39px;
+}
+
+.auth-content {
+  padding-bottom: 52px;
+  padding-top: 52px;
+}
+
+.name-fields {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.name-fields .input-wrap {
+  margin-bottom: 17px;
+  padding: 0 11px;
+}
+
+.name-fields .input-wrap input {
+  font-size: 12px;
+}
+
+.field-error {
+  display: block;
+  line-height: 1.35;
+}
+
+.password-hint {
+  color: #8a948c;
+  font-size: 10px;
+  margin: -15px 0 16px;
+}
+
+.name-fields .field-error {
+  margin-top: -12px;
+}
+
+.submit-button {
+  margin-top: 10px;
+}
+
+.auth-switch {
+  margin-bottom: 23px;
+}
+
+@media (max-width: 480px) {
+  .name-fields {
+    gap: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .name-fields .input-wrap {
+    margin-bottom: 18px;
+  }
+}

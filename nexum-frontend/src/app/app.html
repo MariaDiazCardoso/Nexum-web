@@ -1,0 +1,37 @@
+<div class="app-shell">
+  <header class="site-header">
+    <a class="brand" routerLink="/catalog" aria-label="Nexum, ir al catálogo">
+      <span class="brand-mark" aria-hidden="true">n</span>
+      <span>nexum<span class="brand-period">.</span></span>
+    </a>
+
+    <nav class="main-nav" aria-label="Navegación principal">
+      <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Explorar cursos
+      </a>
+    </nav>
+
+    <div class="header-actions">
+      @if (auth.isAuthenticated()) {
+        <span class="signed-in-label">{{ auth.user()?.nombre || 'Tu espacio' }}</span>
+        <button class="header-login logout-button" type="button" (click)="logout()">Cerrar sesión</button>
+      } @else {
+        <a class="header-login" routerLink="/login">Iniciar sesión</a>
+        <a class="button button-dark button-small" routerLink="/register">Crear cuenta</a>
+      }
+    </div>
+  </header>
+
+  <main>
+    <router-outlet />
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand brand-footer" routerLink="/catalog">
+      <span class="brand-mark" aria-hidden="true">n</span>
+      <span>nexum<span class="brand-period">.</span></span>
+    </a>
+    <span>Aprender algo nuevo cambia todo.</span>
+    <span>© {{ currentYear }} Nexum</span>
+  </footer>
+</div>

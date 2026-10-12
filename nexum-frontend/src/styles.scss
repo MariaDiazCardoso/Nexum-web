@@ -1,0 +1,110 @@
+:root {
+  color-scheme: light;
+  --ink: #1d2822;
+  --muted: #68736c;
+  --green: #276749;
+  --green-dark: #1f513b;
+  --lime: #d6f279;
+  --paper: #fbfcf8;
+  --line: #e8ebe4;
+  --soft-green: #eef4e9;
+  --danger: #ae3939;
+  --shadow: 0 18px 55px rgba(30, 47, 36, 0.08);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button {
+  align-items: center;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 22px;
+  text-decoration: none;
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.button-dark {
+  background: var(--ink);
+  color: #fff;
+}
+
+.button-dark:hover:not(:disabled) {
+  background: #34443a;
+  box-shadow: 0 8px 18px rgba(29, 40, 34, 0.14);
+}
+
+.button-lime {
+  background: var(--lime);
+  color: var(--ink);
+}
+
+.button-lime:hover:not(:disabled) {
+  background: #c8e967;
+}
+
+.button-small {
+  min-height: 40px;
+  padding: 0 17px;
+}
+
+.text-link {
+  color: var(--green);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
