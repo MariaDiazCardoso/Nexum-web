@@ -13,8 +13,16 @@ export class App {
   protected readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
-  protected logout(): void {
+  protected async logout(): Promise<void> {
     this.auth.logout();
-    void this.router.navigate(['/login']);
+    try {
+      const navigated = await this.router.navigateByUrl('/login', { replaceUrl: true });
+      if (!navigated) {
+        globalThis.location.replace('/login');
+      }
+    } catch (error) {
+      console.error('No se pudo navegar al inicio de sesión después de cerrar sesión.', error);
+      globalThis.location.replace('/login');
+    }
   }
 }

@@ -6,7 +6,7 @@ import { App } from './app';
 
 @Component({
   standalone: true,
-  template: '',
+  template: '<p class="login-route">Inicio de sesión</p>',
 })
 class RegisterRouteComponent {}
 
@@ -52,6 +52,7 @@ describe('App', () => {
       await fixture.whenStable();
 
       expect(TestBed.inject(Router).url).toBe('/login');
+      expect(fixture.nativeElement.querySelector('.login-route')?.textContent).toContain('Inicio de sesión');
       expect(globalThis.sessionStorage.getItem('nexum.accessToken')).toBeNull();
     },
   );
