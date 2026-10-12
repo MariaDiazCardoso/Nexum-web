@@ -23,6 +23,7 @@ public class PreguntaServiceImpl implements PreguntaService {
 
     private final PreguntaRepository preguntaRepository;
     private final ExamenRepository examenRepository;
+    private final AccesoService accesoService;
 
     @Override
     public PreguntaResponse crear(PreguntaRequest request) {
@@ -46,13 +47,13 @@ public class PreguntaServiceImpl implements PreguntaService {
                 : preguntaRepository.findByExamen_Id(examenId);
 
         return preguntas.stream()
-                .map(PreguntaResponse::desde)
+                .map(pregunta -> PreguntaResponse.desde(pregunta, accesoService.esAdministrador()))
                 .toList();
     }
 
     @Override
     public PreguntaResponse obtenerPorId(UUID id) {
-        return PreguntaResponse.desde(buscarOLanzar(id));
+        return PreguntaResponse.desde(buscarOLanzar(id), accesoService.esAdministrador());
     }
 
     @Override

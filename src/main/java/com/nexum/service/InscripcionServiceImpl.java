@@ -27,9 +27,11 @@ public class InscripcionServiceImpl implements InscripcionService {
     private final InscripcionRepository inscripcionRepository;
     private final UsuarioRepository usuarioRepository;
     private final CursoRepository cursoRepository;
+    private final AccesoService accesoService;
 
     @Override
     public InscripcionResponse crear(InscripcionRequest request) {
+        accesoService.verificar(request.usuarioId());
         Usuario usuario = obtenerUsuario(request.usuarioId());
         Curso curso = obtenerCurso(request.cursoId());
 
@@ -57,12 +59,16 @@ public class InscripcionServiceImpl implements InscripcionService {
         List<Inscripcion> inscripciones;
 
         if (usuarioId != null && cursoId != null) {
+            accesoService.verificar(usuarioId);
             inscripciones = inscripcionRepository.findByUsuario_IdAndCurso_Id(usuarioId, cursoId);
         } else if (usuarioId != null) {
+            accesoService.verificar(usuarioId);
             inscripciones = inscripcionRepository.findByUsuario_Id(usuarioId);
         } else if (cursoId != null) {
+            accesoService.exigirAdministrador();
             inscripciones = inscripcionRepository.findByCurso_Id(cursoId);
         } else {
+            accesoService.exigirAdministrador();
             inscripciones = inscripcionRepository.findAll();
         }
 
@@ -72,13 +78,25 @@ public class InscripcionServiceImpl implements InscripcionService {
     }
 
     @Override
+    public List<InscripcionResponse> listarPorEmail(String email) {
+        accesoService.verificarEmail(email);
+        return inscripcionRepository.buscarPorEmail(email)
+                .stream()
+                .map(InscripcionResponse::desde)
+                .toList();
+    }
+
+    @Override
     public InscripcionResponse obtenerPorId(UUID id) {
-        return InscripcionResponse.desde(buscarOLanzar(id));
+        Inscripcion inscripcion = buscarOLanzar(id);
+        accesoService.verificar(inscripcion.getUsuario().getId());
+        return InscripcionResponse.desde(inscripcion);
     }
 
     @Override
     public InscripcionResponse actualizarEstado(UUID id, InscripcionPatchRequest request) {
         Inscripcion inscripcion = buscarOLanzar(id);
+        accesoService.verificar(inscripcion.getUsuario().getId());
         if (request.estado() != null) {
             inscripcion.setEstado(request.estado());
         }
@@ -88,6 +106,7 @@ public class InscripcionServiceImpl implements InscripcionService {
     @Override
     public void eliminar(UUID id) {
         Inscripcion inscripcion = buscarOLanzar(id);
+        accesoService.verificar(inscripcion.getUsuario().getId());
         inscripcionRepository.delete(inscripcion);
     }
 

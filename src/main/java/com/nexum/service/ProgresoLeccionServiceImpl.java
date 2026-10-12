@@ -33,10 +33,12 @@ public class ProgresoLeccionServiceImpl implements ProgresoLeccionService {
     private final UsuarioRepository usuarioRepository;
     private final LeccionRepository leccionRepository;
     private final InscripcionRepository inscripcionRepository;
+    private final AccesoService accesoService;
 
     @Override
     @Transactional
     public ProgresoLeccionResponse crear(ProgresoLeccionRequest request) {
+        accesoService.verificar(request.usuarioId());
         Usuario usuario = obtenerUsuario(request.usuarioId());
         Leccion leccion = obtenerLeccion(request.leccionId());
         Curso curso = leccion.getModulo().getCurso();
@@ -68,6 +70,11 @@ public class ProgresoLeccionServiceImpl implements ProgresoLeccionService {
 
     @Override
     public List<ProgresoLeccionResponse> listar(UUID usuarioId, UUID cursoId, UUID leccionId) {
+        if (usuarioId != null) {
+            accesoService.verificar(usuarioId);
+        } else {
+            accesoService.exigirAdministrador();
+        }
         return progresoLeccionRepository.buscarConFiltros(usuarioId, cursoId, leccionId)
                 .stream()
                 .map(ProgresoLeccionResponse::desde)
@@ -76,13 +83,16 @@ public class ProgresoLeccionServiceImpl implements ProgresoLeccionService {
 
     @Override
     public ProgresoLeccionResponse obtenerPorId(UUID id) {
-        return ProgresoLeccionResponse.desde(buscarOLanzar(id));
+        ProgresoLeccion progreso = buscarOLanzar(id);
+        accesoService.verificar(progreso.getUsuario().getId());
+        return ProgresoLeccionResponse.desde(progreso);
     }
 
     @Override
     @Transactional
     public ProgresoLeccionResponse actualizarParcial(UUID id, ProgresoLeccionPatchRequest request) {
         ProgresoLeccion progreso = buscarOLanzar(id);
+        accesoService.verificar(progreso.getUsuario().getId());
         Curso curso = progreso.getLeccion().getModulo().getCurso();
         obtenerInscripcionActiva(progreso.getUsuario().getId(), curso.getId());
 
@@ -118,6 +128,7 @@ public class ProgresoLeccionServiceImpl implements ProgresoLeccionService {
     @Transactional
     public void eliminar(UUID id) {
         ProgresoLeccion progreso = buscarOLanzar(id);
+        accesoService.verificar(progreso.getUsuario().getId());
         UUID usuarioId = progreso.getUsuario().getId();
         UUID cursoId = progreso.getLeccion().getModulo().getCurso().getId();
         progresoLeccionRepository.delete(progreso);

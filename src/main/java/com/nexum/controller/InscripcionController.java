@@ -39,7 +39,11 @@ public class InscripcionController {
     @GetMapping
     public ResponseEntity<List<InscripcionResponse>> listar(
             @RequestParam(required = false) UUID usuarioId,
-            @RequestParam(required = false) UUID cursoId) {
+            @RequestParam(required = false) UUID cursoId,
+            @RequestParam(required = false) String email) {
+        if (email != null && !email.isBlank()) {
+            return ResponseEntity.ok(inscripcionService.listarPorEmail(email));
+        }
         return ResponseEntity.ok(inscripcionService.listar(usuarioId, cursoId));
     }
 

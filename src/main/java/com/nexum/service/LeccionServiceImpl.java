@@ -63,6 +63,14 @@ public class LeccionServiceImpl implements LeccionService {
     }
 
     @Override
+    public List<LeccionResponse> listarPorCurso(UUID cursoId) {
+        return leccionRepository.buscarPorCurso(cursoId)
+                .stream()
+                .map(LeccionResponse::desde)
+                .toList();
+    }
+
+    @Override
     public LeccionResponse obtenerPorId(UUID id) {
         return LeccionResponse.desde(buscarOLanzar(id));
     }

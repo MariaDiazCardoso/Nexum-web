@@ -27,4 +27,20 @@ public record PreguntaResponse(
                 opciones
         );
     }
+
+    public static PreguntaResponse desde(Pregunta pregunta, boolean mostrarCorrectas) {
+        List<OpcionRespuestaResponse> opciones = pregunta.getOpciones() == null
+                ? List.of()
+                : pregunta.getOpciones().stream()
+                        .map(opcion -> OpcionRespuestaResponse.desde(opcion, mostrarCorrectas))
+                        .toList();
+
+        return new PreguntaResponse(
+                pregunta.getId(),
+                pregunta.getExamen() != null ? pregunta.getExamen().getId() : null,
+                pregunta.getTextoPregunta(),
+                pregunta.getExplicacionRespuesta(),
+                opciones
+        );
+    }
 }

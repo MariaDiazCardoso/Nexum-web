@@ -15,6 +15,8 @@ public interface CursoService {
 
     List<CursoResponse> listar(UUID categoriaId, EstadoCurso estado);
 
+    List<CursoResponse> listarPorCategoria(String categoria, EstadoCurso estado);
+
     CursoResponse obtenerPorId(UUID id);
 
     CursoResponse actualizar(UUID id, CursoRequest request);

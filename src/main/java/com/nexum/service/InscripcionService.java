@@ -13,6 +13,8 @@ public interface InscripcionService {
 
     List<InscripcionResponse> listar(UUID usuarioId, UUID cursoId);
 
+    List<InscripcionResponse> listarPorEmail(String email);
+
     InscripcionResponse obtenerPorId(UUID id);
 
     InscripcionResponse actualizarEstado(UUID id, InscripcionPatchRequest request);

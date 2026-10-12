@@ -116,6 +116,20 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioResponse.desde(usuarioRepository.save(usuario));
     }
 
+    @Override
+    public UsuarioResponse actualizarRol(UUID id, UsuarioRolPatchRequest request) {
+        Usuario usuario = buscarOLanzar(id);
+        usuario.setRol(request.rol());
+        return UsuarioResponse.desde(usuarioRepository.save(usuario));
+    }
+
+    @Override
+    public UsuarioResponse actualizarEmailVerificado(UUID id, UsuarioEmailVerificadoPatchRequest request) {
+        Usuario usuario = buscarOLanzar(id);
+        usuario.setEmailVerificado(request.emailVerificado());
+        return UsuarioResponse.desde(usuarioRepository.save(usuario));
+    }
+
     // ── Eliminación ───────────────────────────────────────────────────────────
 
     @Override

@@ -78,6 +78,16 @@ public class CursoServiceImpl implements CursoService {
     }
 
     @Override
+    public List<CursoResponse> listarPorCategoria(String categoria, EstadoCurso estado) {
+        EstadoCurso estadoFiltro = estado != null ? estado : EstadoCurso.PUBLICADO;
+
+        return cursoRepository.buscarPorCategoria(categoria, estadoFiltro)
+                .stream()
+                .map(CursoResponse::desde)
+                .toList();
+    }
+
+    @Override
     public CursoResponse obtenerPorId(UUID id) {
         return CursoResponse.desde(buscarOLanzar(id));
     }

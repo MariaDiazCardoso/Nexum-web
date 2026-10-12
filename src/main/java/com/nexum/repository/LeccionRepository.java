@@ -14,6 +14,9 @@ public interface LeccionRepository extends JpaRepository<Leccion, UUID> {
 
     List<Leccion> findByModulo_IdOrderByOrdenAsc(UUID moduloId);
 
+    @Query("SELECT l FROM Leccion l JOIN l.modulo m WHERE m.curso.id = :cursoId ORDER BY m.orden, l.orden")
+    List<Leccion> buscarPorCurso(@Param("cursoId") UUID cursoId);
+
     boolean existsByModulo_Id(UUID moduloId);
 
     boolean existsByModulo_IdAndOrden(UUID moduloId, Integer orden);

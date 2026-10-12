@@ -41,8 +41,16 @@ public class CursoController {
     @GetMapping
     public ResponseEntity<List<CursoResponse>> listar(
             @RequestParam(required = false) UUID categoriaId,
+            @RequestParam(required = false) String categoria,
             @RequestParam(required = false) EstadoCurso estado) {
+        if (categoria != null && !categoria.isBlank()) {
+            return ResponseEntity.ok(cursoService.listarPorCategoria(categoria, estado));
+        }
         return ResponseEntity.ok(cursoService.listar(categoriaId, estado));
+    }
+
+    public ResponseEntity<List<CursoResponse>> listar(UUID categoriaId, EstadoCurso estado) {
+        return listar(categoriaId, null, estado);
     }
 
     @GetMapping("/{id}")

@@ -37,8 +37,16 @@ public class LeccionController {
 
     @GetMapping
     public ResponseEntity<List<LeccionResponse>> listar(
-            @RequestParam(required = false) UUID moduloId) {
+            @RequestParam(required = false) UUID moduloId,
+            @RequestParam(required = false) UUID cursoId) {
+        if (cursoId != null) {
+            return ResponseEntity.ok(leccionService.listarPorCurso(cursoId));
+        }
         return ResponseEntity.ok(leccionService.listar(moduloId));
+    }
+
+    public ResponseEntity<List<LeccionResponse>> listar(UUID moduloId) {
+        return listar(moduloId, null);
     }
 
     @GetMapping("/{id}")

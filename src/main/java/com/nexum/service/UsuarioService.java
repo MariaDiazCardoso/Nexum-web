@@ -21,5 +21,9 @@ public interface UsuarioService {
 
     UsuarioResponse actualizarParcial(UUID id, UsuarioPatchRequest request);
 
+    UsuarioResponse actualizarRol(UUID id, UsuarioRolPatchRequest request);
+
+    UsuarioResponse actualizarEmailVerificado(UUID id, UsuarioEmailVerificadoPatchRequest request);
+
     void eliminar(UUID id);
 }

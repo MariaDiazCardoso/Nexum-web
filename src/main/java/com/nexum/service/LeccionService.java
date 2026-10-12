@@ -12,6 +12,8 @@ public interface LeccionService {
 
     List<LeccionResponse> listar(UUID moduloId);
 
+    List<LeccionResponse> listarPorCurso(UUID cursoId);
+
     LeccionResponse obtenerPorId(UUID id);
 
     LeccionResponse actualizar(UUID id, LeccionRequest request);
