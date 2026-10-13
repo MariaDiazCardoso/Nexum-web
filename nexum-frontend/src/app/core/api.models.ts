@@ -1,3 +1,9 @@
+/* ============================================================
+   NEXUM – API Response/Request Models
+   Synced with Spring Boot backend entities
+   ============================================================ */
+
+/* ── Autenticación y Usuario ────────────────────────────── */
 export interface UserResponse {
   id: string;
   nombre: string;
@@ -9,6 +15,12 @@ export interface UserResponse {
   fechaRegistro: string;
   ultimaConexion: string | null;
   emailVerificado: boolean;
+}
+
+export interface UserUpdateRequest {
+  nombre?: string;
+  apellido?: string;
+  avatarUrl?: string | null;
 }
 
 export interface LoginRequest {
@@ -30,6 +42,7 @@ export interface RegisterRequest {
   password: string;
 }
 
+/* ── Cursos y Categorías ────────────────────────────────── */
 export interface CourseResponse {
   id: string;
   titulo: string;
@@ -46,6 +59,7 @@ export interface CourseResponse {
   ruta: string | null;
   categoriaAcademica: string | null;
   categoriaIds: string[];
+  imagenUrl?: string | null;
 }
 
 export interface CategoryResponse {
@@ -54,6 +68,7 @@ export interface CategoryResponse {
   iconoUrl: string | null;
 }
 
+/* ── Módulos y Lecciones ────────────────────────────────── */
 export interface ModuleResponse {
   id: string;
   cursoId: string;
@@ -81,13 +96,15 @@ export interface LessonResponse {
   imagenUrl: string | null;
 }
 
+/* ── Inscripciones y Progreso ───────────────────────────── */
 export interface EnrollmentResponse {
   id: string;
   usuarioId: string;
   cursoId: string;
-  estado: string;
+  estado: 'ACTIVA' | 'COMPLETADA' | 'CANCELADA' | string;
   progresoPorcentaje: number;
   fechaInscripcion: string;
+  fechaCompletado?: string | null;
 }
 
 export interface LessonProgressResponse {
@@ -100,6 +117,132 @@ export interface LessonProgressResponse {
   tiempoActivo: number | null;
 }
 
+/* ── Evaluaciones y Quizzes ─────────────────────────────── */
+export interface ExamenResponse {
+  id: string;
+  leccionId: string;
+  titulo: string;
+  intentosMaximos: number;
+  puntajeMinimoAprobacion: number;
+}
+
+export interface OpcionRespuestaResponse {
+  id: string;
+  textoOpcion: string;
+  esCorrecta?: boolean | null;
+}
+
+export interface PreguntaResponse {
+  id: string;
+  examenId: string;
+  textoPregunta: string;
+  explicacionRespuesta?: string | null;
+  opciones: OpcionRespuestaResponse[];
+}
+
+export interface CalificacionRequest {
+  usuarioId: string;
+  cursoId: string;
+  leccionId?: string | null;
+  tipo: string;
+  titulo: string;
+  nota: number;
+  notaMaxima: number;
+  peso?: number | null;
+  comentario?: string | null;
+}
+
+export interface CalificacionResponse {
+  id: string;
+  usuarioId: string;
+  cursoId: string;
+  leccionId?: string | null;
+  tipo: string;
+  titulo: string;
+  nota: number;
+  notaMaxima: number;
+  peso?: number | null;
+  comentario?: string | null;
+  fechaRegistro: string;
+}
+
+/* ── Certificados ───────────────────────────────────────── */
+export interface CertificadoRequest {
+  usuarioId: string;
+  cursoId: string;
+  codigoVerificacion?: string;
+  urlCertificado?: string;
+}
+
+export interface CertificadoResponse {
+  id: string;
+  usuarioId: string;
+  cursoId: string;
+  codigoVerificacion: string;
+  urlCertificado?: string | null;
+  fechaEmision: string;
+  nombreCurso?: string;
+  nombreUsuario?: string;
+}
+
+/* ── Medallas / Gamificación ────────────────────────────── */
+export interface MedallaResponse {
+  id: string;
+  nombre: string;
+  descripcion: string | null;
+  iconoUrl: string | null;
+  criterio: string | null;
+  puntosBono: number | null;
+}
+
+export interface UsuarioMedallaResponse {
+  id: string;
+  usuarioId: string;
+  medallaId: string;
+  fechaObtenida: string;
+  medalla?: MedallaResponse;
+}
+
+/* ── Comentarios de Lección ─────────────────────────────── */
+export interface ComentarioLeccionRequest {
+  usuarioId: string;
+  leccionId: string;
+  comentarioPadreId?: string | null;
+  contenido: string;
+}
+
+export interface ComentarioLeccionResponse {
+  id: string;
+  usuarioId: string;
+  leccionId: string;
+  comentarioPadreId?: string | null;
+  contenido: string;
+  fecha: string;
+  autorNombre?: string;
+}
+
+/* ── Código de Verificación ─────────────────────────────── */
+export interface CodigoVerificacionRequest {
+  usuarioId: string;
+  tipo: string;
+  minutosVigencia: number;
+}
+
+export interface CodigoVerificacionResponse {
+  id: string;
+  usuarioId: string;
+  tipo: string;
+  usado: boolean;
+  expiraEn: string;
+  fechaCreacion: string;
+  codigo?: string | null;
+}
+
+export interface CodigoVerificacionValidacionRequest {
+  codigo: string;
+}
+
+/* ── Errores de API ─────────────────────────────────────── */
 export interface ApiErrorResponse {
   status?: number;
   message?: string;

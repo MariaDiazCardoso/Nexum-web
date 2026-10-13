@@ -1,59 +1,389 @@
-@use '../login/login.page.scss';
+/* ══ REGISTER PAGE — Gestalt Principles UI Design ══════════════
+   Leyes aplicadas:
+   1. Región Común: Tarjeta unificada idéntica a Login, coherencia del sistema de diseño.
+   2. Figura y Fondo: Contraste armónico entre el lienzo (bg-main) y la tarjeta (bg-card / bg-surface).
+   3. Proximidad: Agrupación estricta de labels + inputs + errores.
+   4. Continuidad: Distribución simétrica de Nombre y Apellido en 2 columnas paralelas.
+   5. Semejanza: Componentes, botones e iconos con morfología visual consistente.
+   ════════════════════════════════════════════════════════════ */
 
-.auth-card h2 {
-  font-size: 39px;
+.auth-page {
+  align-items: center;
+  background: var(--bg-main);
+  display: flex;
+  justify-content: center;
+  min-height: calc(100vh - 72px);
+  padding: clamp(24px, 4vw, 56px) 16px;
+  transition: background var(--transition);
 }
 
-.auth-content {
-  padding-bottom: 52px;
-  padding-top: 52px;
+/* ── Tarjeta Unificada (Región Común) ──────────────────────── */
+.auth-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  max-width: 980px;
+  overflow: hidden;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+    max-width: 500px;
+  }
 }
 
-.name-fields {
+/* ── Panel Izquierdo: Propuesta de Valor / Marca ───────────── */
+.auth-brand-side {
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(32px, 5vw, 48px);
+  position: relative;
+  transition: background var(--transition), border-color var(--transition);
+
+  @media (max-width: 860px) {
+    border-bottom: 1px solid var(--border);
+    border-right: 0;
+    padding: 32px 24px;
+  }
+}
+
+.brand-side-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-pill {
+  align-items: center;
+  align-self: flex-start;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--brand-purple);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 8px;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+  padding: 5px 12px;
+  text-transform: uppercase;
+
+  .pill-dot {
+    background: var(--brand-purple);
+    border-radius: 50%;
+    display: inline-block;
+    height: 7px;
+    width: 7px;
+  }
+}
+
+.brand-headline {
+  color: var(--text-primary);
+  font-size: clamp(1.65rem, 2.5vw, 2.15rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin: 0 0 16px;
+
+  .gradient-text {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.brand-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 32px;
+}
+
+/* Beneficios con Ley de Semejanza */
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.benefit-item {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+
+  .benefit-icon {
+    align-items: center;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--brand-purple);
+    display: flex;
+    flex-shrink: 0;
+    height: 36px;
+    justify-content: center;
+    width: 36px;
+  }
+
+  .benefit-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    strong {
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    span {
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+  }
+}
+
+.brand-side-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 36px;
+  padding-top: 20px;
+
+  .trust-badge {
+    align-items: center;
+    color: var(--text-muted);
+    display: flex;
+    font-size: 0.8rem;
+    gap: 8px;
+  }
+}
+
+/* ── Panel Derecho: Formulario (Figura Primaria) ───────────── */
+.auth-form-side {
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(32px, 5vw, 48px);
+}
+
+.form-header {
+  margin-bottom: 24px;
+
+  .form-kicker {
+    color: var(--brand-purple);
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .form-title {
+    color: var(--text-primary);
+    font-size: clamp(1.5rem, 2.2vw, 1.85rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 0 0 6px;
+
+    .accent-dot {
+      color: var(--brand-blue);
+    }
+  }
+
+  .form-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+/* Alertas de Estado */
+.alert {
+  align-items: center;
+  border-radius: var(--radius-md);
+  display: flex;
+  font-size: 0.85rem;
+  font-weight: 500;
+  gap: 10px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+
+  svg { flex-shrink: 0; }
+}
+
+.alert-error {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+}
+
+/* Formulario & Ley de Proximidad */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Fila de Nombre / Apellido (Continuidad & Proximidad) */
+.name-row {
   display: grid;
   gap: 14px;
   grid-template-columns: 1fr 1fr;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.name-fields .input-wrap {
-  margin-bottom: 17px;
-  padding: 0 11px;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.name-fields .input-wrap input {
-  font-size: 12px;
+.form-label {
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.label-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+
+  .field-hint {
+    color: var(--text-muted);
+    font-size: 0.76rem;
+  }
+}
+
+/* Inputs Unificados (Semejanza) */
+.input-wrap {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+
+  &:focus-within {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  &.invalid {
+    border-color: var(--danger);
+    background: var(--danger-bg);
+  }
+
+  .input-icon {
+    align-items: center;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: center;
+    padding-left: 14px;
+    pointer-events: none;
+  }
+
+  input {
+    background: transparent;
+    border: 0;
+    color: var(--text-primary);
+    flex: 1;
+    font-size: 0.92rem;
+    height: 44px;
+    outline: none;
+    padding: 0 14px 0 10px;
+    width: 100%;
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+
+  .visibility-toggle {
+    background: transparent;
+    border: 0;
+    color: var(--brand-purple);
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0 14px;
+    transition: opacity var(--transition-fast);
+
+    &:hover {
+      opacity: 0.75;
+    }
+  }
 }
 
 .field-error {
-  display: block;
-  line-height: 1.35;
+  color: var(--danger);
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: 2px;
 }
 
-.password-hint {
-  color: #8a948c;
-  font-size: 10px;
-  margin: -15px 0 16px;
+/* Botón Submit */
+.btn-submit {
+  height: 48px;
+  margin-top: 8px;
+  width: 100%;
 }
 
-.name-fields .field-error {
-  margin-top: -12px;
+.spinner-sm {
+  animation: spin 0.8s linear infinite;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  border-top-color: #ffffff;
+  display: inline-block;
+  height: 16px;
+  width: 16px;
 }
 
-.submit-button {
-  margin-top: 10px;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.auth-switch {
-  margin-bottom: 23px;
-}
+/* Pie de Navegación */
+.form-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+  padding-top: 18px;
+  text-align: center;
 
-@media (max-width: 480px) {
-  .name-fields {
-    gap: 0;
-    grid-template-columns: 1fr;
-  }
+  .auth-switch {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    margin: 0;
 
-  .name-fields .input-wrap {
-    margin-bottom: 18px;
+    .switch-link {
+      color: var(--brand-purple);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--brand-blue);
+        text-decoration: underline;
+      }
+    }
   }
 }

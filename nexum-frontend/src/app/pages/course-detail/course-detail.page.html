@@ -140,11 +140,17 @@
                   <p class="viewer-placeholder">Esta lección todavía no tiene contenido publicado.</p>
                 }
                 @if (enrollment()) {
-                  <button class="button button-lime complete-button" type="button" (click)="completeLesson(lesson)"
-                    [disabled]="saving() || isLessonComplete(lesson.id)">
-                    {{ isLessonComplete(lesson.id) ? 'Lección completada ✓' : saving() ? 'Guardando…' : 'Marcar como completada' }}
-                  </button>
+                  <div style="display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;">
+                    <button class="button button-lime complete-button" type="button" (click)="completeLesson(lesson)"
+                      [disabled]="saving() || isLessonComplete(lesson.id)" style="flex: 1;">
+                      {{ isLessonComplete(lesson.id) ? 'Lección completada ✓' : saving() ? 'Guardando…' : 'Marcar como completada' }}
+                    </button>
+                    <button class="btn btn-secondary btn-sm" type="button" (click)="openQuiz()" style="min-height: 40px;">
+                      📝 Evaluación
+                    </button>
+                  </div>
                 }
+                <app-lesson-comments [lessonId]="lesson.id" />
               } @else if (canReadLessons()) {
                 <span class="viewer-mark" aria-hidden="true">✳</span>
                 <h3>Un paso a la vez</h3>
@@ -185,5 +191,16 @@
         </div>
       </form>
     </div>
+  }
+
+  @if (quizOpen() && activeExam(); as exam) {
+    @if (course(); as c) {
+      <app-quiz-dialog
+        [exam]="exam"
+        [courseId]="c.id"
+        [lessonId]="selectedLesson()?.id"
+        (close)="quizOpen.set(false)"
+      />
+    }
   }
 </section>

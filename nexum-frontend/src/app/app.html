@@ -1,43 +1,170 @@
 <div class="app-shell">
+
+  <!-- ══ HEADER / NAVBAR ══════════════════════════════════ -->
   <header class="site-header">
-    <a class="brand" routerLink="/catalog" aria-label="Nexum, ir al catálogo">
-      <span class="brand-mark" aria-hidden="true">n</span>
-      <span>nexum<span class="brand-period">.</span></span>
-    </a>
+    <div class="header-inner">
 
-    <nav class="main-nav" aria-label="Navegación principal">
-      <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        Explorar cursos
+      <!-- Brand Logo -->
+      <a class="brand-logo brand" routerLink="/catalog" aria-label="Nexum, ir al catálogo" (click)="closeMobileMenu()">
+        <img
+          [src]="isDark() ? '/images/logo-dark.png' : '/images/logo-light.png'"
+          alt="Nexum"
+          class="logo-img"
+          width="140"
+          height="44"
+        />
+        <span class="sr-only">nexum</span>
       </a>
-      @if (auth.isAuthenticated()) {
-        <a routerLink="/my-learning" routerLinkActive="active">Mis cursos</a>
-      }
-      @if (auth.isAdmin()) {
-        <a routerLink="/admin" routerLinkActive="active">Panel administrador</a>
-      }
-    </nav>
 
-    <div class="header-actions">
-      @if (auth.isAuthenticated()) {
-        <span class="signed-in-label">{{ auth.user()?.nombre || 'Tu espacio' }}</span>
-        <button class="header-login logout-button" type="button" (click)="logout()">Cerrar sesión</button>
-      } @else {
-        <a class="header-login" routerLink="/login">Iniciar sesión</a>
-        <a class="button button-dark button-small" routerLink="/register">Crear cuenta</a>
-      }
+      <!-- Desktop Nav -->
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          Explorar cursos
+        </a>
+        @if (auth.isAuthenticated()) {
+          <a routerLink="/my-learning" routerLinkActive="active">Mis cursos</a>
+          <a routerLink="/certificates" routerLinkActive="active">Certificados</a>
+        }
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" routerLinkActive="active">Administración</a>
+        }
+      </nav>
+
+      <!-- Header Actions (desktop) -->
+      <div class="header-actions">
+
+        <!-- Theme Toggle -->
+        <button
+          class="theme-toggle"
+          type="button"
+          (click)="toggleTheme()"
+          [attr.aria-label]="isDark() ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          [title]="isDark() ? 'Modo claro' : 'Modo oscuro'"
+        >
+          @if (isDark()) {
+            <!-- Sun icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          } @else {
+            <!-- Moon icon -->
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          }
+        </button>
+
+        @if (auth.isAuthenticated()) {
+          <!-- User Menu -->
+          <a class="user-chip" routerLink="/profile" title="Mi perfil">
+            <span class="user-avatar" aria-hidden="true">
+              {{ (auth.user()?.nombre ?? auth.userId() ?? 'U').charAt(0).toUpperCase() }}
+            </span>
+            <span class="user-name">{{ auth.user()?.nombre || 'Mi perfil' }}</span>
+          </a>
+          <button class="btn btn-ghost btn-sm logout-btn logout-button" type="button" (click)="logout()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Salir
+          </button>
+        } @else {
+          <a class="btn btn-ghost btn-sm" routerLink="/login">Iniciar sesión</a>
+          <a class="btn btn-primary btn-sm" routerLink="/register">Crear cuenta</a>
+        }
+
+        <!-- Mobile menu hamburger -->
+        <button
+          class="mobile-menu-btn"
+          type="button"
+          (click)="toggleMobileMenu()"
+          [attr.aria-expanded]="mobileMenuOpen()"
+          aria-label="Menú"
+        >
+          @if (mobileMenuOpen()) {
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          } @else {
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          }
+        </button>
+      </div>
     </div>
+
+    <!-- Mobile Drawer -->
+    @if (mobileMenuOpen()) {
+      <nav class="mobile-nav" aria-label="Menú móvil">
+        <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">
+          Explorar cursos
+        </a>
+        @if (auth.isAuthenticated()) {
+          <a routerLink="/my-learning" routerLinkActive="active" (click)="closeMobileMenu()">Mis cursos</a>
+          <a routerLink="/certificates" routerLinkActive="active" (click)="closeMobileMenu()">Certificados</a>
+          <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">Mi perfil</a>
+        }
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">Administración</a>
+        }
+        <div class="mobile-nav-footer">
+          <button class="theme-toggle-mobile" type="button" (click)="toggleTheme()">
+            {{ isDark() ? '☀️ Modo claro' : '🌙 Modo oscuro' }}
+          </button>
+          @if (auth.isAuthenticated()) {
+            <button class="btn btn-ghost btn-sm" type="button" (click)="logout()">Cerrar sesión</button>
+          } @else {
+            <a class="btn btn-primary btn-sm btn-full" routerLink="/register" (click)="closeMobileMenu()">Crear cuenta gratis</a>
+          }
+        </div>
+      </nav>
+    }
   </header>
 
+  <!-- ══ MAIN CONTENT ══════════════════════════════════════ -->
   <main>
     <router-outlet />
   </main>
 
+  <!-- ══ FOOTER ════════════════════════════════════════════ -->
   <footer class="site-footer">
-    <a class="brand brand-footer" routerLink="/catalog">
-      <span class="brand-mark" aria-hidden="true">n</span>
-      <span>nexum<span class="brand-period">.</span></span>
-    </a>
-    <span>Aprender algo nuevo cambia todo.</span>
-    <span>© {{ currentYear }} Nexum</span>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a routerLink="/catalog" aria-label="Nexum inicio">
+          <img
+            [src]="isDark() ? '/images/logo-dark.png' : '/images/logo-light.png'"
+            alt="Nexum"
+            class="footer-logo"
+            width="100"
+            height="32"
+          />
+        </a>
+        <p>Aprender algo nuevo cambia todo.</p>
+      </div>
+
+      <nav class="footer-nav" aria-label="Links del footer">
+        <a routerLink="/catalog">Explorar cursos</a>
+        @if (auth.isAuthenticated()) {
+          <a routerLink="/my-learning">Mis cursos</a>
+          <a routerLink="/certificates">Certificados</a>
+          <a routerLink="/profile">Mi perfil</a>
+        } @else {
+          <a routerLink="/login">Iniciar sesión</a>
+          <a routerLink="/register">Crear cuenta</a>
+        }
+      </nav>
+
+      <div class="footer-copy">
+        <span>© {{ currentYear }} Nexum. Todos los derechos reservados.</span>
+      </div>
+    </div>
   </footer>
+
 </div>

@@ -1,0 +1,126 @@
+<section class="certificates-page">
+  <div class="certificates-container">
+
+    <header class="certificates-header">
+      <span class="eyebrow">LOGROS ACADÉMICOS</span>
+      <h1>Mis Certificados</h1>
+      <p>Certificados digitales emitidos por completar cursos y programas en la plataforma Nexum.</p>
+    </header>
+
+    @if (loading()) {
+      <div class="card" style="text-align: center; padding: 48px;">
+        <span class="spinner"></span>
+        <p style="margin-top: 16px; color: var(--text-secondary);">Cargando tus certificados...</p>
+      </div>
+    } @else if (errorMessage()) {
+      <div class="alert alert-error">
+        {{ errorMessage() }}
+      </div>
+    } @else {
+
+      <!-- Lista de Cursos Disponibles para Reclamar Certificado -->
+      @if (claimableCourses().length > 0) {
+        <div class="card" style="margin-bottom: 32px; border-color: var(--brand-cyan); background: var(--bg-surface);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div>
+              <span class="badge badge-cyan" style="margin-bottom: 6px;">¡FELICITACIONES!</span>
+              <h2 style="font-size: 1.15rem; margin: 4px 0;">Tienes cursos completados listos para certificar</h2>
+              <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">Reclama tu certificado digital oficial con código de autenticidad único.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              @for (item of claimableCourses(); track item.course.id) {
+                <button class="btn btn-primary btn-sm" type="button" (click)="claimCertificate(item.course.id)" [disabled]="claiming()">
+                  {{ claiming() ? 'Generando...' : 'Reclamar certificado: ' + item.course.titulo }}
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Galería de Certificados Obtenidos -->
+      @if (certificates().length === 0 && claimableCourses().length === 0) {
+        <div class="card" style="text-align: center; padding: 60px 24px;">
+          <span style="font-size: 48px;" aria-hidden="true">🎓</span>
+          <h2 style="margin: 16px 0 8px; font-size: 1.3rem;">Aún no tienes certificados</h2>
+          <p style="color: var(--text-secondary); max-width: 440px; margin: 0 auto 24px; font-size: 14px;">
+            Cuando alcances el 100% de progreso en cualquier curso inscrito, tu certificado oficial se habilitará aquí para que lo veas o imprimas.
+          </p>
+          <a class="btn btn-primary" routerLink="/catalog">Explorar cursos para empezar</a>
+        </div>
+      } @else {
+
+        <div class="certificates-grid">
+          @for (cert of certificates(); track cert.id) {
+            <article class="cert-card">
+              <div class="cert-card-preview">
+                <span class="cert-icon" aria-hidden="true">🏆</span>
+                <h3>{{ getCourseTitle(cert.cursoId) }}</h3>
+                <span class="cert-code">ID: {{ cert.codigoVerificacion }}</span>
+              </div>
+
+              <div class="cert-card-body">
+                <div class="cert-meta">
+                  <span><strong>Estudiante:</strong> {{ auth.user()?.nombre }} {{ auth.user()?.apellido }}</span>
+                  <span><strong>Fecha de emisión:</strong> {{ cert.fechaEmision | date:'longDate' }}</span>
+                </div>
+
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-secondary btn-sm" style="flex: 1;" type="button" (click)="openDiploma(cert)">
+                    Ver Diploma
+                  </button>
+                </div>
+              </div>
+            </article>
+          }
+        </div>
+
+      }
+
+    }
+
+    <!-- ══ MODAL DIPLOMA DIGITAL OFICIAL IMPRIMIBLE ══ -->
+    @if (selectedCert(); as cert) {
+      <div class="diploma-modal-backdrop" (click)="closeDiploma()">
+        <div class="diploma-modal-wrapper" (click)="$event.stopPropagation()">
+
+          <div class="diploma-sheet" id="printable-diploma">
+            <img src="/images/logo-light.png" alt="Nexum" class="diploma-logo" />
+
+            <h2 class="diploma-title">Certificado de Finalización</h2>
+            <p class="diploma-subtitle">La plataforma de aprendizaje Nexum certifica que:</p>
+
+            <h3 class="diploma-student-name">{{ auth.user()?.nombre }} {{ auth.user()?.apellido }}</h3>
+
+            <p class="diploma-text">
+              Ha completado exitosamente y con distinción todos los módulos y evaluaciones del curso
+              <strong>«{{ getCourseTitle(cert.cursoId) }}»</strong>, demostrando dominio y dedicación en el aprendizaje continuo.
+            </p>
+
+            <div class="diploma-footer">
+              <div class="signature-box">
+                <div class="sign-line"></div>
+                <span>Dirección Académica Nexum</span>
+              </div>
+
+              <div class="diploma-qr-box">
+                <div><strong>Código de Verificación:</strong> {{ cert.codigoVerificacion }}</div>
+                <div><strong>Emisión:</strong> {{ cert.fechaEmision | date:'mediumDate' }}</div>
+                <div>Autenticidad validada en nexum.edu</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="diploma-modal-actions">
+            <button class="btn btn-secondary" type="button" (click)="closeDiploma()">Cerrar</button>
+            <button class="btn btn-primary" type="button" (click)="printDiploma()">
+              🖨️ Imprimir / Guardar PDF
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
+
+  </div>
+</section>

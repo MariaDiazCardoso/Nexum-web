@@ -41,6 +41,7 @@ export class AuthService {
     return this.http.post<UserResponse>(`${API_BASE_URL}/auth/registro`, request);
   }
 
+
   logout(): void {
     globalThis.sessionStorage?.removeItem(TOKEN_STORAGE_KEY);
     globalThis.sessionStorage?.removeItem(ROLE_STORAGE_KEY);

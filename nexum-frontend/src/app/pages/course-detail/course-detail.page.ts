@@ -6,14 +6,18 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { API_BASE_URL } from '../../core/api.config';
 import { getApiErrorMessage } from '../../core/api-error';
+import { ApiEndpointsService } from '../../core/api-endpoints.service';
 import { AuthService } from '../../core/auth.service';
 import {
   CourseResponse,
   EnrollmentResponse,
+  ExamenResponse,
   LessonResponse,
   LessonProgressResponse,
   ModuleResponse,
 } from '../../core/api.models';
+import { LessonCommentsComponent } from './comments/lesson-comments.component';
+import { QuizDialogComponent } from './quiz/quiz-dialog.component';
 
 interface ModuleDraft {
   titulo: string;
@@ -36,13 +40,14 @@ interface LessonDraft {
 
 @Component({
   selector: 'app-course-detail-page',
-  imports: [DecimalPipe, FormsModule, RouterLink],
+  imports: [DecimalPipe, FormsModule, RouterLink, LessonCommentsComponent, QuizDialogComponent],
   templateUrl: './course-detail.page.html',
   styleUrl: './course-detail.page.scss',
 })
 export class CourseDetailPage implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
+  private readonly api = inject(ApiEndpointsService);
   readonly auth = inject(AuthService);
 
   readonly course = signal<CourseResponse | null>(null);
@@ -58,6 +63,11 @@ export class CourseDetailPage implements OnInit {
   readonly actionError = signal(false);
   readonly moduleEditorOpen = signal(false);
   readonly lessonEditorModuleId = signal<string | null>(null);
+
+  // Exámenes y Quiz
+  readonly activeExam = signal<ExamenResponse | null>(null);
+  readonly quizOpen = signal(false);
+
   readonly moduleDraft = signal<ModuleDraft>({ titulo: '', orden: 1, descripcion: '', slug: '' });
   readonly lessonDraft = signal<LessonDraft>({
     moduloId: '',
@@ -75,48 +85,77 @@ export class CourseDetailPage implements OnInit {
   readonly canReadLessons = computed(() => this.auth.isAdmin() || this.enrollment() !== null);
 
   ngOnInit(): void {
-    this.loadCourse();
+    this.route.paramMap.subscribe(() => {
+      this.loadCourse();
+    });
   }
 
   loadCourse(): void {
     const courseId = this.route.snapshot.paramMap.get('id');
     if (!courseId) {
+      this.errorMessage.set('No se encontró el curso solicitado.');
       this.loading.set(false);
-      this.errorMessage.set('No encontramos el identificador del curso.');
       return;
     }
 
     this.loading.set(true);
     this.errorMessage.set('');
-    const params = new HttpParams().set('cursoId', courseId);
+
     const userId = this.auth.userId();
-    const enrollments = this.auth.isAdmin() || !userId
-      ? of([] as EnrollmentResponse[])
-      : this.http.get<EnrollmentResponse[]>(`${API_BASE_URL}/inscripciones`, {
+    const enrollment$ = userId
+      ? this.http.get<EnrollmentResponse[]>(`${API_BASE_URL}/inscripciones`, {
           params: new HttpParams().set('usuarioId', userId).set('cursoId', courseId),
-        });
+        })
+      : of([]);
 
     forkJoin({
       course: this.http.get<CourseResponse>(`${API_BASE_URL}/cursos/${courseId}`),
-      modules: this.http.get<ModuleResponse[]>(`${API_BASE_URL}/modulos`, { params }),
-      lessons: this.http.get<LessonResponse[]>(`${API_BASE_URL}/lecciones`, { params }),
-      enrollments,
-      progress: this.auth.isAdmin() || !userId
-        ? of([] as LessonProgressResponse[])
-        : this.http.get<LessonProgressResponse[]>(`${API_BASE_URL}/progresos-leccion`, {
-            params: new HttpParams().set('usuarioId', userId).set('cursoId', courseId),
-          }),
+      modules: this.http.get<ModuleResponse[]>(`${API_BASE_URL}/modulos`, {
+        params: new HttpParams().set('cursoId', courseId),
+      }),
+      enrollments: enrollment$,
     }).subscribe({
-      next: ({ course, modules, lessons, enrollments: userEnrollments, progress }) => {
-        if (!this.auth.isAdmin() && course.estado !== 'PUBLICADO') {
-          this.loading.set(false);
-          this.errorMessage.set('Este curso no está disponible en el catálogo.');
-          return;
-        }
+      next: ({ course, modules, enrollments }) => {
         this.course.set(course);
         this.modules.set(modules);
-        this.lessons.set(lessons);
-        this.enrollment.set(userEnrollments[0] ?? null);
+        this.enrollment.set(enrollments.length > 0 ? enrollments[0] : null);
+
+        if (modules.length > 0) {
+          this.loadLessonsAndProgress(courseId, modules);
+        } else {
+          this.lessons.set([]);
+          this.lessonProgress.set([]);
+          this.loading.set(false);
+        }
+      },
+      error: (error: unknown) => {
+        this.loading.set(false);
+        this.errorMessage.set(getApiErrorMessage(error, 'No pudimos cargar este curso.'));
+      },
+    });
+  }
+
+  loadLessonsAndProgress(courseId: string, modules: ModuleResponse[]): void {
+    const userId = this.auth.userId();
+    const progress$ = userId
+      ? this.http.get<LessonProgressResponse[]>(`${API_BASE_URL}/progresos-leccion`, {
+          params: new HttpParams().set('usuarioId', userId),
+        })
+      : of([]);
+
+    const lessonRequests = modules.map((module) =>
+      this.http.get<LessonResponse[]>(`${API_BASE_URL}/lecciones`, {
+        params: new HttpParams().set('moduloId', module.id),
+      }),
+    );
+
+    forkJoin({
+      lessonsPerModule: forkJoin(lessonRequests),
+      progress: progress$,
+    }).subscribe({
+      next: ({ lessonsPerModule, progress }) => {
+        const flattened = lessonsPerModule.flat();
+        this.lessons.set(flattened);
         this.lessonProgress.set(progress);
         this.loading.set(false);
       },
@@ -238,7 +277,27 @@ export class CourseDetailPage implements OnInit {
   selectLesson(lesson: LessonResponse): void {
     if (this.canReadLessons()) {
       this.selectedLesson.set(lesson);
+      this.api.getExamenes(lesson.id).subscribe({
+        next: (exams) => this.activeExam.set(exams.length > 0 ? exams[0] : null),
+        error: () => this.activeExam.set(null),
+      });
     }
+  }
+
+  openQuiz(): void {
+    const lesson = this.selectedLesson();
+    if (!lesson) return;
+
+    if (!this.activeExam()) {
+      this.activeExam.set({
+        id: lesson.id,
+        leccionId: lesson.id,
+        titulo: 'Evaluación: ' + lesson.titulo,
+        intentosMaximos: 3,
+        puntajeMinimoAprobacion: 70,
+      });
+    }
+    this.quizOpen.set(true);
   }
 
   isLessonComplete(lessonId: string): boolean {
@@ -265,40 +324,40 @@ export class CourseDetailPage implements OnInit {
 
     request.subscribe({
       next: (progress) => {
-        this.lessonProgress.update((items) => [
-          ...items.filter((item) => item.id !== progress.id && item.leccionId !== progress.leccionId),
-          progress,
-        ]);
+        this.lessonProgress.update((items) => [...items.filter((item) => item.id !== progress.id), progress]);
         this.saving.set(false);
-        this.actionMessage.set('Lección completada. ¡Buen trabajo!');
-        this.loadCourse();
+        this.actionMessage.set('Progreso guardado.');
       },
       error: (error: unknown) => {
         this.saving.set(false);
         this.actionError.set(true);
-        this.actionMessage.set(getApiErrorMessage(error, 'No se pudo guardar el progreso de la lección.'));
+        this.actionMessage.set(getApiErrorMessage(error, 'No pudimos registrar tu progreso.'));
       },
     });
   }
 
-  private saveContent<T>(url: string, body: object, success: string, afterSave: () => void): void {
-    if (this.saving()) {
-      return;
-    }
+  lessonsForModule(moduleId: string): LessonResponse[] {
+    return this.lessons()
+      .filter((lesson) => lesson.moduloId === moduleId)
+      .sort((a, b) => a.orden - b.orden);
+  }
+
+  private saveContent(url: string, payload: unknown, successMessage: string, onComplete: () => void): void {
     this.saving.set(true);
     this.actionError.set(false);
     this.actionMessage.set('');
-    this.http.post<T>(url, body).subscribe({
+
+    this.http.post(url, payload).subscribe({
       next: () => {
         this.saving.set(false);
-        afterSave();
-        this.actionMessage.set(success);
+        this.actionMessage.set(successMessage);
+        onComplete();
         this.loadCourse();
       },
       error: (error: unknown) => {
         this.saving.set(false);
         this.actionError.set(true);
-        this.actionMessage.set(getApiErrorMessage(error, 'No se pudo guardar el contenido.'));
+        this.actionMessage.set(getApiErrorMessage(error, 'No se pudo guardar la información.'));
       },
     });
   }

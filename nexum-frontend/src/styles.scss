@@ -1,109 +1,460 @@
-:root {
+/* ==========================================================
+   NEXUM — Global Design System
+   Paleta oficial extraída del logotipo Nexum
+   ========================================================== */
+
+/* ── Fuentes ─────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Variables del Tema Claro (fondo blanco) ─────────────── */
+:root,
+[data-theme="light"] {
   color-scheme: light;
-  --ink: #1d2822;
-  --muted: #68736c;
-  --green: #276749;
-  --green-dark: #1f513b;
-  --lime: #d6f279;
-  --paper: #fbfcf8;
-  --line: #e8ebe4;
-  --soft-green: #eef4e9;
-  --danger: #ae3939;
-  --shadow: 0 18px 55px rgba(30, 47, 36, 0.08);
-  font-family: 'Segoe UI', Arial, sans-serif;
+
+  /* Fondo */
+  --bg-main:    #ffffff;
+  --bg-card:    #ffffff;
+  --bg-surface: #f8fafc;
+  --bg-elevated:#f1f5f9;
+  --bg-input:   #ffffff;
+
+  /* Bordes */
+  --border:     #e2e8f0;
+  --border-focus: #2563eb;
+
+  /* Texto */
+  --text-primary:   #0f172a;
+  --text-secondary: #475569;
+  --text-muted:     #94a3b8;
+  --text-on-brand:  #ffffff;
+
+  /* Marca Nexum — del logo */
+  --brand-navy:   #141f45;
+  --brand-cyan:   #00b4d8;
+  --brand-blue:   #2563eb;
+  --brand-purple: #7c3aed;
+
+  /* Semánticos */
+  --success:  #16a34a;
+  --success-bg: #f0fdf4;
+  --warning:  #d97706;
+  --warning-bg: #fffbeb;
+  --danger:   #dc2626;
+  --danger-bg:  #fef2f2;
+  --info:     #2563eb;
+  --info-bg:  #eff6ff;
+
+  /* Gradientes de Marca */
+  --gradient-brand:   linear-gradient(135deg, #00b4d8 0%, #2563eb 50%, #7c3aed 100%);
+  --gradient-hero:    linear-gradient(160deg, #141f45 0%, #1e3a8a 40%, #1d4ed8 100%);
+  --gradient-card-hover: linear-gradient(135deg, rgba(0,180,216,.06) 0%, rgba(37,99,235,.06) 100%);
+
+  /* Sombras */
+  --shadow-sm:  0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md:  0 4px 16px rgba(15, 23, 42, 0.10);
+  --shadow-lg:  0 10px 40px rgba(15, 23, 42, 0.12);
+  --shadow-brand: 0 8px 24px rgba(37, 99, 235, 0.22);
+
+  /* Navbar */
+  --nav-bg:         rgba(255, 255, 255, 0.92);
+  --nav-border:     rgba(226, 232, 240, 0.8);
+  --nav-text:       #475569;
+  --nav-text-active:#0f172a;
+
+  /* Footer */
+  --footer-bg:    #f8fafc;
+  --footer-border:#e2e8f0;
+
+  /* Logo */
+  --logo-src: url('/images/logo-light.png');
+
+  /* Misc */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-full:9999px;
+
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Variables del Tema Oscuro (fondo negro) ─────────────── */
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  /* Fondo */
+  --bg-main:    #000000;
+  --bg-card:    #0b0f1a;
+  --bg-surface: #111827;
+  --bg-elevated:#162039;
+  --bg-input:   #0f172a;
+
+  /* Bordes */
+  --border:     #1e293b;
+  --border-focus: #00b4d8;
+
+  /* Texto */
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #475569;
+  --text-on-brand:  #ffffff;
+
+  /* Marca Nexum — colores vibrantes en oscuro */
+  --brand-navy:   #1e3a8a;
+  --brand-cyan:   #22d3ee;
+  --brand-blue:   #60a5fa;
+  --brand-purple: #a78bfa;
+
+  /* Semánticos */
+  --success:  #4ade80;
+  --success-bg: #052e16;
+  --warning:  #fbbf24;
+  --warning-bg: #1c1200;
+  --danger:   #f87171;
+  --danger-bg:  #1f0707;
+  --info:     #60a5fa;
+  --info-bg:  #0c1a2e;
+
+  /* Gradientes */
+  --gradient-brand:  linear-gradient(135deg, #22d3ee 0%, #60a5fa 50%, #a78bfa 100%);
+  --gradient-hero:   linear-gradient(160deg, #000000 0%, #0c1a2e 50%, #0f2460 100%);
+  --gradient-card-hover: linear-gradient(135deg, rgba(34,211,238,.08) 0%, rgba(96,165,250,.08) 100%);
+
+  /* Sombras */
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg:  0 10px 40px rgba(0, 0, 0, 0.6);
+  --shadow-brand: 0 8px 24px rgba(34, 211, 238, 0.18);
+
+  /* Navbar */
+  --nav-bg:         rgba(0, 0, 0, 0.88);
+  --nav-border:     rgba(30, 41, 59, 0.8);
+  --nav-text:       #94a3b8;
+  --nav-text-active:#f1f5f9;
+
+  /* Footer */
+  --footer-bg:    #0b0f1a;
+  --footer-border:#1e293b;
+
+  /* Logo */
+  --logo-src: url('/images/logo-dark.png');
+}
+
+/* ── Reset y Base ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.sr-only {
+  border: 0 !important;
+  clip: rect(0, 0, 0, 0) !important;
+  -webkit-clip-path: inset(50%) !important;
+  clip-path: inset(50%) !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: absolute !important;
+  white-space: nowrap !important;
+  width: 1px !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: var(--paper);
-  color: var(--ink);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.6;
   min-width: 320px;
   min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
 }
 
-button,
-input {
-  font: inherit;
+/* ── Tipografía ─────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-button,
+p { color: var(--text-secondary); }
+
 a {
+  color: var(--brand-blue);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--transition-fast);
+}
+a:hover { color: var(--brand-cyan); }
+
+button, input, select, textarea {
+  font: inherit;
   -webkit-tap-highlight-color: transparent;
 }
 
-.button {
+img { max-width: 100%; height: auto; display: block; }
+
+/* ── Botones ────────────────────────────────────────────── */
+.btn {
   align-items: center;
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   display: inline-flex;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
+  gap: 8px;
   justify-content: center;
-  min-height: 48px;
-  padding: 0 22px;
+  min-height: 44px;
+  padding: 0 20px;
   text-decoration: none;
   transition:
-    transform 160ms ease,
-    background 160ms ease,
-    box-shadow 160ms ease;
+    transform var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
+  white-space: nowrap;
+
+  &:hover:not(:disabled) { transform: translateY(-1px); }
+  &:active:not(:disabled) { transform: translateY(0); }
+  &:disabled { cursor: not-allowed; opacity: 0.55; }
 }
 
-.button:hover:not(:disabled) {
-  transform: translateY(-1px);
+.btn-primary {
+  background: var(--gradient-brand);
+  color: #ffffff;
+  box-shadow: var(--shadow-brand);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 12px 32px rgba(37, 99, 235, 0.35);
+  }
 }
 
-.button:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
+.btn-secondary {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border);
+  color: var(--text-primary);
+
+  &:hover:not(:disabled) {
+    background: var(--bg-elevated);
+    border-color: var(--brand-blue);
+  }
 }
 
-.button-dark {
-  background: var(--ink);
-  color: #fff;
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+
+  &:hover:not(:disabled) {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+  }
 }
 
-.button-dark:hover:not(:disabled) {
-  background: #34443a;
-  box-shadow: 0 8px 18px rgba(29, 40, 34, 0.14);
+.btn-danger {
+  background: var(--danger-bg);
+  border: 1.5px solid var(--danger);
+  color: var(--danger);
+
+  &:hover:not(:disabled) {
+    background: var(--danger);
+    color: #fff;
+  }
 }
 
-.button-lime {
-  background: var(--lime);
-  color: var(--ink);
+.btn-sm  { min-height: 36px; padding: 0 14px; font-size: 13px; }
+.btn-lg  { min-height: 52px; padding: 0 28px; font-size: 16px; }
+.btn-full { width: 100%; }
+
+/* Compatibilidad con clase antigua */
+.button { @extend .btn; }
+.button-dark { @extend .btn; background: var(--text-primary); color: var(--bg-main); }
+.button-small { @extend .btn-sm; }
+.text-link { color: var(--brand-blue); font-weight: 600; }
+.text-link:hover { color: var(--brand-cyan); text-decoration: underline; }
+
+/* ── Tarjetas ──────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  transition:
+    box-shadow var(--transition),
+    border-color var(--transition),
+    transform var(--transition);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--brand-blue);
+    transform: translateY(-2px);
+  }
 }
 
-.button-lime:hover:not(:disabled) {
-  background: #c8e967;
+/* ── Inputs ─────────────────────────────────────────────── */
+.input-field {
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 15px;
+  padding: 12px 16px;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  width: 100%;
+
+  &::placeholder { color: var(--text-muted); }
+
+  &:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+  }
+
+  &.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+  }
 }
 
-.button-small {
-  min-height: 40px;
-  padding: 0 17px;
-}
-
-.text-link {
-  color: var(--green);
+/* ── Badges ─────────────────────────────────────────────── */
+.badge {
+  align-items: center;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  font-size: 11px;
   font-weight: 700;
-  text-decoration: none;
+  gap: 4px;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  text-transform: uppercase;
+}
+.badge-blue   { background: rgba(37,99,235,.14); color: var(--brand-blue); }
+.badge-cyan   { background: rgba(0,180,216,.14);  color: var(--brand-cyan); }
+.badge-purple { background: rgba(124,58,237,.14); color: var(--brand-purple); }
+.badge-green  { background: rgba(22,163,74,.14);  color: var(--success); }
+.badge-gray   { background: var(--bg-elevated);   color: var(--text-muted); }
+
+/* ── Alerts / Toasts ────────────────────────────────────── */
+.alert {
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.alert-success { background: var(--success-bg); color: var(--success); }
+.alert-error   { background: var(--danger-bg);  color: var(--danger);  }
+.alert-info    { background: var(--info-bg);    color: var(--info);    }
+.alert-warning { background: var(--warning-bg); color: var(--warning); }
+
+/* ── Progress Bar ──────────────────────────────────────── */
+.progress-track {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-full);
+  height: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+.progress-fill {
+  background: var(--gradient-brand);
+  border-radius: var(--radius-full);
+  height: 100%;
+  transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.text-link:hover {
-  text-decoration: underline;
+/* ── Divider ─────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
 }
 
+/* ── Spinner ─────────────────────────────────────────── */
+.spinner {
+  animation: spin 0.8s linear infinite;
+  border: 3px solid var(--border);
+  border-top-color: var(--brand-blue);
+  border-radius: 50%;
+  display: inline-block;
+  height: 24px;
+  width: 24px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Loading Skeleton ────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    var(--border) 50%,
+    var(--bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Page Section Layout ─────────────────────────────── */
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 5vw, 48px);
+}
+
+.page-section {
+  padding: clamp(40px, 8vw, 80px) 0;
+}
+
+.section-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  margin-bottom: 32px;
+}
+
+/* ── Grid de Cursos ──────────────────────────────────── */
+.course-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+/* ── Glow Cyan (elementos destacados) ──────────────── */
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 180, 216, 0.3), 0 0 40px rgba(0, 180, 216, 0.1);
+}
+.glow-blue {
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.3), 0 0 40px rgba(37, 99, 235, 0.1);
+}
+
+/* ── Reduced Motion ──────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }

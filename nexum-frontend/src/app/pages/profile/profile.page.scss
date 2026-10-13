@@ -1,0 +1,282 @@
+/* ══ PROFILE PAGE — Nexum Design System ══════════════════ */
+
+.profile-page {
+  background: var(--bg-main);
+  min-height: calc(100vh - 72px);
+  padding: clamp(32px, 5vw, 64px) clamp(20px, 5vw, 48px);
+  transition: background var(--transition);
+}
+
+.profile-container {
+  margin: 0 auto;
+  max-width: 1000px;
+}
+
+.profile-header {
+  margin-bottom: 32px;
+
+  .eyebrow {
+    color: var(--brand-blue);
+    display: inline-flex;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: 900;
+    margin-bottom: 6px;
+  }
+
+  p {
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+}
+
+.profile-grid {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 320px minmax(0, 1fr);
+}
+
+/* ── Card Izquierda (Usuario & XP) ──────────────────────── */
+.user-summary-card {
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  padding: 36px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    background: var(--gradient-brand);
+    height: 4px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+.avatar-large {
+  align-items: center;
+  background: var(--gradient-brand);
+  border: 3px solid var(--bg-surface);
+  border-radius: 50%;
+  box-shadow: var(--shadow-brand);
+  color: #fff;
+  display: flex;
+  font-size: 36px;
+  font-weight: 800;
+  height: 96px;
+  justify-content: center;
+  margin-bottom: 16px;
+  width: 96px;
+}
+
+.user-full-name {
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.user-email-text {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-bottom: 16px;
+  word-break: break-all;
+}
+
+.verification-badge {
+  align-items: center;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 6px;
+  margin-bottom: 24px;
+  padding: 4px 14px;
+
+  &.verified {
+    background: var(--success-bg);
+    border: 1px solid var(--success);
+    color: var(--success);
+  }
+
+  &.unverified {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+  }
+}
+
+/* Stats / XP Box */
+.xp-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  width: 100%;
+}
+
+.xp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+
+  span {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  strong {
+    color: var(--brand-cyan);
+    font-size: 14px;
+    font-weight: 800;
+  }
+}
+
+.xp-total {
+  color: var(--text-primary);
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+
+/* ── Panel Derecho (Detalles y Verificación) ─────────────── */
+.profile-details-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 28px;
+  transition: border-color var(--transition-fast);
+
+  h2 {
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .card-intro {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+}
+
+/* Form Styles */
+.form-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+  }
+}
+
+/* Verificación de Correo Flow */
+.verify-flow-box {
+  background: var(--bg-surface);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.code-input-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+
+  input {
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    text-align: center;
+    max-width: 220px;
+  }
+}
+
+/* Badges / Medallas List */
+.medals-list {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  margin-top: 16px;
+}
+
+.medal-item {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  text-align: center;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+
+  &:hover {
+    border-color: var(--brand-purple);
+    transform: translateY(-2px);
+  }
+
+  .medal-icon {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+
+  strong {
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  small {
+    color: var(--text-muted);
+    font-size: 11px;
+    margin-top: 4px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
